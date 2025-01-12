@@ -4,6 +4,8 @@ const dotenv = require('dotenv');
 const userRoutes = require('./routes/user.routes');
 const characterRoutes = require('./routes/character.routes');
 const questRoutes = require('./routes/quest.routes');
+const achievementRoutes = require('./routes/achievement.routes');
+const { authenticate } = require('./middlewares/auth.middleware');
 
 dotenv.config(); // Подключение переменных из .env
 
@@ -15,6 +17,8 @@ app.use(express.json());
 app.use('/api/users', userRoutes);
 app.use('/api/characters', characterRoutes);
 app.use('/api/quests', questRoutes);
+app.use('/api/achievements', achievementRoutes);
+
 // Подключение к MongoDB
 mongoose
   .connect(process.env.MONGO_URI)
