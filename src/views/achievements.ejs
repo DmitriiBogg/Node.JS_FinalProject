@@ -1,0 +1,24 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Achievements</title>
+    <link rel="stylesheet" href="/styles.css">
+</head>
+<body>
+    <div class="container">
+        <h1>Achievements</h1>
+        <ul>
+            <% achievements.forEach(achievement => { %>
+                <div class="list-container">
+                    <h2><%= achievement.title %></h2>
+                    <p><%= achievement.description %></p>
+                    <p>Criteria: <%= achievement.criteria %> (Threshold: <%= achievement.threshold %>)</p>
+                    <p>Reward: <%= achievement.reward.gold %> gold, <%= achievement.reward.experience %> XP</p>
+                </div>
+            <% }); %>
+        </ul>
+    </div>
+</body>
+</html>

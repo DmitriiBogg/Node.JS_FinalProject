@@ -1,0 +1,54 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Characters</title>
+    <link rel="stylesheet" href="/styles.css">
+</head>
+<body>
+    <div class="container">
+        <h1>Your Characters</h1>
+
+        <!--  Форма для создания нового персонажа -->
+        <form action="/api/characters" method="POST" class="form-container">
+            <label for="name">Character Name:</label>
+            <input type="text" id="name" name="name" required>
+
+            <label for="class">Class:</label>
+            <select id="class" name="class" required>
+                <option value="Warrior">Warrior</option>
+                <option value="Mage">Mage</option>
+                <option value="Ranger">Ranger</option>
+            </select>
+
+            <button type="submit" class="button">Create Character</button>
+        </form>
+
+        <!--  Список существующих персонажей -->
+        <% if (characters && characters.length > 0) { %>
+            <% characters.forEach(character => { %>
+                <div class="list-container">
+                    <h2><%= character.name %> (Level: <%= character.level %>)</h2>
+                    <p>Class: <%= character.class %></p>
+                    <p>Gold: <%= character.gold %></p>
+                    <p>Experience: <%= character.experience %> XP</p>
+
+                    <h3>Achievements:</h3>
+                    <% if (character.achievements && character.achievements.length > 0) { %>
+                        <ul>
+                            <% character.achievements.forEach(achievement => { %>
+                                <li><strong><%= achievement.title %></strong> - <%= achievement.description %></li>
+                            <% }); %>
+                        </ul>
+                    <% } else { %>
+                        <p>No achievements yet.</p>
+                    <% } %>
+                </div>
+            <% }); %>
+        <% } else { %>
+            <p>No characters found.</p>
+        <% } %>
+    </div>
+</body>
+</html>

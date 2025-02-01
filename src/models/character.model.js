@@ -16,16 +16,22 @@ characterSchema.methods.levelUp = function () {
   console.log(
     `Before Level Up: Level - ${this.level}, Experience - ${this.experience}`,
   );
-  if (this.experience >= 1000) {
+
+  // Проверка на положительный опыт и достижение порога
+  if (this.experience >= 1000 && this.experience > 0) {
     this.level += 1;
     this.experience -= 1000;
+    console.log(`Level up! New level: ${this.level}`);
+  } else {
+    console.log('Not enough experience to level up.');
   }
-  // потом можно убрать. (для нахождения проблемы)
+
   console.log(
     `After Level Up: Level - ${this.level}, Experience - ${this.experience}`,
   );
 };
-// Рэйтинг персонажей этих уважаемых
+
+// Рэйтинг персонажа
 characterSchema.methods.updateRating = function () {
   // Рейтинг зависит от уровня, количества достижений и опыта
   this.rating =

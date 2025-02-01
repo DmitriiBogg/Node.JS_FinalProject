@@ -1,67 +1,49 @@
 const express = require('express');
 const router = express.Router();
-const Achievement = require('../models/achievement.model');
-const Character = require('../models/character.model');
+const achievementController = require('../controllers/achievement.controller');
 const {
   authenticate,
   authorizeRole,
 } = require('../middlewares/auth.middleware');
 
-// Создать достижение (только для админов)
-router.post('/', authenticate, authorizeRole('admin'), async (req, res) => {
-  try {
-    const { title, description, criteria, threshold, reward } = req.body;
-    const achievement = await Achievement.create({
-      title,
-      description,
-      criteria,
-      threshold,
-      reward,
-    });
-    res.status(201).json(achievement);
-  } catch (err) {
-    res.status(500).json({ error: err.message });
-  }
-});
+// Создать достижение
+router.post(
+  '/',
+  authenticate,
+  authorizeRole('admin'),
+  async (req, res, next) => {
+    try {
+      await achievementController.createAchievement(req, res, next);
+    } catch (err) {
+      next(err); // Передаём ошибку в middleware
+    }
+  },
+);
 
 // Получить список достижений
-router.get('/', async (req, res) => {
+router.get('/', async (req, res, next) => {
   try {
-    const achievements = await Achievement.find();
-    res.status(200).json(achievements);
+    await achievementController.getAllAchievements(req, res, next);
   } catch (err) {
-    res.status(500).json({ error: err.message });
+    next(err); // Передаём ошибку в middleware
   }
 });
 
 // Присвоить достижение персонажу
-router.put('/assign/:achievementId', authenticate, async (req, res) => {
+router.put('/assign/:achievementId', authenticate, async (req, res, next) => {
   try {
-    const { characterId } = req.body;
-    const achievement = await Achievement.findById(req.params.achievementId);
-    if (!achievement) {
-      return res.status(404).json({ error: 'Achievement not found' });
-    }
-
-    const character = await Character.findById(characterId);
-    if (!character) {
-      return res.status(404).json({ error: 'Character not found' });
-    }
-
-    if (character.achievements.includes(req.params.achievementId)) {
-      return res
-        .status(400)
-        .json({ error: 'Achievement already assigned to this character.' });
-    }
-
-    character.achievements.push(req.params.achievementId);
-    await character.save();
-
-    res
-      .status(200)
-      .json({ message: 'Achievement assigned successfully', character });
+    await achievementController.assignAchievement(req, res, next);
   } catch (err) {
-    res.status(500).json({ error: err.message });
+    next(err); // Передаём ошибку в middleware
+  }
+});
+
+// Рендер страницы достижений
+router.get('/view', async (req, res, next) => {
+  try {
+    await achievementController.renderAchievements(req, res, next);
+  } catch (err) {
+    next(err); // Передаём ошибку в middleware
   }
 });
 

@@ -1,106 +1,77 @@
 const express = require('express');
 const router = express.Router();
-const Character = require('../models/character.model');
-const { authenticate } = require('../middlewares/auth.middleware');
+const characterController = require('../controllers/character.controller');
+const {
+  authenticate,
+  authorizeRole,
+} = require('../middlewares/auth.middleware');
+
+// Логи после импорта
+console.log('authenticate (character.routes):', typeof authenticate);
+console.log('authorizeRole (character.routes):', typeof authorizeRole);
 
 // Создать персонажа
-router.post('/', async (req, res) => {
-  try {
-    const { name, class: characterClass, userId } = req.body;
-    const newCharacter = await Character.create({
-      name,
-      class: characterClass,
-      userId,
-    });
-    res.status(201).json(newCharacter);
-  } catch (err) {
-    res.status(500).json({ error: err.message });
-  }
-});
+console.log('Route POST / using authenticate:', typeof authenticate);
+router.post('/', authenticate, characterController.createCharacter);
 
-router.put('/level-up/:id', async (req, res) => {
-  try {
-    const character = await Character.findById(req.params.id);
-    if (!character)
-      return res.status(404).json({ error: 'Character not found' });
+// Удаление персонажа
+console.log('Route DELETE /:id using authenticate:', typeof authenticate);
+router.delete('/:id', authenticate, characterController.deleteCharacter);
 
-    character.levelUp();
-    await character.save();
+// Редактирование персонажа
+console.log('Route PUT /:id using authenticate:', typeof authenticate);
+router.put('/:id', authenticate, characterController.updateCharacter);
 
-    res.status(200).json(character);
-  } catch (err) {
-    res.status(500).json({ error: err.message });
-  }
-});
+// Увеличить уровень персонажа
+console.log('Route PUT /level-up/:id using authenticate:', typeof authenticate);
+router.put('/level-up/:id', authenticate, characterController.levelUpCharacter);
 
 // Добавить опыт персонажу
-router.put('/add-experience/:id', async (req, res) => {
-  try {
-    const { experience } = req.body; // количество опыта в теле запроса
-    const character = await Character.findById(req.params.id);
-    if (!character) {
-      return res.status(404).json({ error: 'Character not found' });
-    }
+console.log(
+  'Route PUT /add-experience/:id using authenticate:',
+  typeof authenticate,
+);
+router.put(
+  '/add-experience/:id',
+  authenticate,
+  characterController.addExperience,
+);
 
-    character.experience += experience;
-    await character.save();
+// Завершение задания персонажем
+console.log(
+  'Route PUT /complete-quest/:questId using authenticate:',
+  typeof authenticate,
+);
+router.put(
+  '/complete-quest/:questId',
+  authenticate,
+  characterController.completeQuest,
+);
 
-    res.status(200).json(character);
-  } catch (err) {
-    res.status(500).json({ error: err.message });
-  }
-});
+// Получить список персонажей
+console.log(
+  'Route GET / using characterController.getCharacters:',
+  typeof characterController.getCharacters,
+);
+router.get('/', characterController.getCharacters);
 
-// добавить автоматическое достижение персонажу
-router.put('/complete-quest/:questId', authenticate, async (req, res) => {
-  try {
-    const { characterId } = req.body;
-    const quest = await Quest.findById(req.params.questId);
-    if (!quest) return res.status(404).json({ error: 'Quest not found' });
+// Получить рейтинг персонажей
+console.log(
+  'Route GET /leaderboard using characterController.getLeaderboard:',
+  typeof characterController.getLeaderboard,
+);
+router.get('/leaderboard', characterController.getLeaderboard);
 
-    const character = await Character.findById(characterId);
-    if (!character)
-      return res.status(404).json({ error: 'Character not found' });
+// Рендер страницы персонажей
+console.log(
+  'Route GET /view using characterController.renderCharacters:',
+  typeof characterController.renderCharacters,
+);
+router.get('/view', characterController.renderCharacters);
+// Рендер рейтинга персонажей
+router.get('/leaderboard/view', characterController.renderLeaderboard);
 
-    // Награда за выполнение задания
-    character.experience += quest.reward.experience;
-    character.gold += quest.reward.gold;
-
-    // Проверка достижений
-    const achievements = await Achievement.find();
-    for (const achievement of achievements) {
-      if (
-        !character.achievements.includes(achievement._id) && // Если достижение ещё не присвоено
-        achievement.criteria === 'gold' &&
-        character.gold >= achievement.threshold
-      ) {
-        character.achievements.push(achievement._id);
-      }
-    }
-    // Обновление рейтинга
-    character.updateRating();
-
-    await character.save();
-
-    quest.status = 'completed';
-    await quest.save();
-
-    res
-      .status(200)
-      .json({ message: 'Quest completed successfully', character });
-  } catch (err) {
-    res.status(500).json({ error: err.message });
-  }
-});
-
-// Получить список персонажей по рейтингу
-router.get('/leaderboard', async (req, res) => {
-  try {
-    const characters = await Character.find().sort({ rating: -1 });
-    res.status(200).json(characters);
-  } catch (err) {
-    res.status(500).json({ error: err.message });
-  }
-});
+// API для рейтинга
+router.get('/leaderboard', characterController.getLeaderboard);
 
 module.exports = router;

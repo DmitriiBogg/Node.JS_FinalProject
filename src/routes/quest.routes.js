@@ -1,166 +1,45 @@
 const express = require('express');
 const router = express.Router();
-const Quest = require('../models/quest.model');
+const questController = require('../controllers/quest.controller');
 const {
   authenticate,
   authorizeRole,
 } = require('../middlewares/auth.middleware');
 
-// Создать задание (доступно только для гильдмастера)
-router.post('/', authenticate, authorizeRole('admin'), async (req, res) => {
-  try {
-    const { title, description, difficulty, reward } = req.body;
-    const newQuest = await Quest.create({
-      title,
-      description,
-      difficulty,
-      reward,
-    });
-    res.status(201).json(newQuest);
-  } catch (err) {
-    res.status(500).json({ error: err.message });
-  }
-});
-
-// Получить список всех заданий
-router.get('/', authenticate, async (req, res) => {
-  try {
-    const quests = await Quest.find();
-    res.status(200).json(quests);
-  } catch (err) {
-    res.status(500).json({ error: err.message });
-  }
-});
-
-// Получить задание по ID
-router.get('/:id', authenticate, async (req, res) => {
-  try {
-    const quest = await Quest.findById(req.params.id);
-    if (!quest) {
-      return res.status(404).json({ error: 'Quest not found' });
-    }
-    res.status(200).json(quest);
-  } catch (err) {
-    res.status(500).json({ error: err.message });
-  }
-});
-
-// Удалить задание (доступно только для гильдмастера)
-router.delete(
-  '/:id',
+// Создать задание
+router.post(
+  '/',
   authenticate,
   authorizeRole('admin'),
-  async (req, res) => {
-    try {
-      const quest = await Quest.findByIdAndDelete(req.params.id);
-      if (!quest) {
-        return res.status(404).json({ error: 'Quest not found' });
-      }
-      res.status(200).json({ message: 'Quest deleted successfully' });
-    } catch (err) {
-      res.status(500).json({ error: err.message });
-    }
-  },
+  questController.createQuest,
 );
-// назначить задание персонажу
-router.put('/assign/:questId', authenticate, async (req, res) => {
-  try {
-    const { characterId } = req.body;
-    const quest = await Quest.findById(req.params.questId);
-    if (!quest) {
-      return res.status(404).json({ error: 'Quest not found' });
-    }
 
-    if (quest.status !== 'open') {
-      return res.status(400).json({ error: 'Quest is not available.' });
-    }
+// Получить все задания
+router.get('/', questController.getAllQuests);
 
-    quest.status = 'in-progress';
-    quest.assignedTo = characterId; // Добавляем ID персонажа
-    await quest.save();
+// Получить задание по ID
 
-    res.status(200).json(quest);
-  } catch (err) {
-    res.status(500).json({ error: err.message });
-  }
-});
+router.get('/:id', questController.getQuestById);
 
-// завершение задания персонажем
-router.put('/complete/:questId', authenticate, async (req, res) => {
-  try {
-    const { characterId } = req.body;
-    const quest = await Quest.findById(req.params.questId);
-    if (!quest) {
-      return res.status(404).json({ error: 'Quest not found' });
-    }
+// Обновить статус задания
 
-    if (quest.status !== 'in-progress' || quest.assignedTo !== characterId) {
-      return res
-        .status(400)
-        .json({ error: 'Quest cannot be completed by this character.' });
-    }
+router.put(
+  '/:id/status',
+  authenticate,
+  authorizeRole('admin'),
+  questController.updateQuestStatus,
+);
 
-    const character = await Character.findById(characterId);
-    if (!character) {
-      return res.status(404).json({ error: 'Character not found' });
-    }
+// Назначить задание персонажу
 
-    // Добавление награды персонажу
-    character.experience += quest.reward.experience;
-    character.gold += quest.reward.gold;
-    await character.save();
+router.put('/assign', authenticate, questController.assignQuestToCharacter);
 
-    // Обновление статуса задания
-    quest.status = 'completed';
-    await quest.save();
+// Добавить отзыв
 
-    res
-      .status(200)
-      .json({ message: 'Quest completed successfully', character, quest });
-  } catch (err) {
-    res.status(500).json({ error: err.message });
-  }
-});
+router.post('/:questId/review', authenticate, questController.addReview);
 
-router.post('/review/:questId', authenticate, async (req, res) => {
-  try {
-    const { rating, comment } = req.body;
-    const quest = await Quest.findById(req.params.questId);
-    if (!quest) return res.status(404).json({ error: 'Quest not found' });
+// Рендер страницы заданий
 
-    // Проверка: задание должно быть завершено
-    if (quest.status !== 'completed') {
-      return res
-        .status(400)
-        .json({ error: 'Cannot leave a review for an incomplete quest.' });
-    }
-
-    // Добавление отзыва
-    quest.reviews.push({
-      userId: req.user.id,
-      rating,
-      comment,
-    });
-
-    await quest.save();
-    res.status(201).json({ message: 'Review added successfully', quest });
-  } catch (err) {
-    res.status(500).json({ error: err.message });
-  }
-});
-
-router.get('/reviews/:questId', async (req, res) => {
-  try {
-    const quest = await Quest.findById(req.params.questId).populate(
-      'reviews.userId',
-      'email',
-    );
-    if (!quest) return res.status(404).json({ error: 'Quest not found' });
-
-    res.status(200).json(quest.reviews);
-  } catch (err) {
-    res.status(500).json({ error: err.message });
-  }
-});
+router.get('/view', questController.renderQuests);
 
 module.exports = router;
