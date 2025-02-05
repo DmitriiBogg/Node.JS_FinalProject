@@ -6,45 +6,25 @@ const {
   authorizeRole,
 } = require('../middlewares/auth.middleware');
 
-// Создать достижение
+// Создание нового достижения (доступно только администратору)
 router.post(
   '/',
   authenticate,
   authorizeRole('admin'),
-  async (req, res, next) => {
-    try {
-      await achievementController.createAchievement(req, res, next);
-    } catch (err) {
-      next(err); // Передаём ошибку в middleware
-    }
-  },
+  achievementController.createAchievement,
 );
 
-// Получить список достижений
-router.get('/', async (req, res, next) => {
-  try {
-    await achievementController.getAllAchievements(req, res, next);
-  } catch (err) {
-    next(err); // Передаём ошибку в middleware
-  }
-});
+// Получение списка всех достижений
+router.get('/', achievementController.getAllAchievements);
 
-// Присвоить достижение персонажу
-router.put('/assign/:achievementId', authenticate, async (req, res, next) => {
-  try {
-    await achievementController.assignAchievement(req, res, next);
-  } catch (err) {
-    next(err); // Передаём ошибку в middleware
-  }
-});
+// Присвоение достижения персонажу
+router.put(
+  '/assign/:achievementId',
+  authenticate,
+  achievementController.assignAchievement,
+);
 
-// Рендер страницы достижений
-router.get('/view', async (req, res, next) => {
-  try {
-    await achievementController.renderAchievements(req, res, next);
-  } catch (err) {
-    next(err); // Передаём ошибку в middleware
-  }
-});
+// Отображение страницы с достижениями
+router.get('/view', achievementController.renderAchievements);
 
 module.exports = router;

@@ -6,7 +6,7 @@ const {
   authorizeRole,
 } = require('../middlewares/auth.middleware');
 
-// Создать задание
+// Создание нового задания (доступно только администратору)
 router.post(
   '/',
   authenticate,
@@ -14,15 +14,13 @@ router.post(
   questController.createQuest,
 );
 
-// Получить все задания
+// Получение списка всех заданий
 router.get('/', questController.getAllQuests);
 
-// Получить задание по ID
-
+// Получение задания по ID
 router.get('/:id', questController.getQuestById);
 
-// Обновить статус задания
-
+// Обновление статуса задания (доступно только администратору)
 router.put(
   '/:id/status',
   authenticate,
@@ -30,16 +28,13 @@ router.put(
   questController.updateQuestStatus,
 );
 
-// Назначить задание персонажу
-
+// Назначение задания персонажу
 router.put('/assign', authenticate, questController.assignQuestToCharacter);
 
-// Добавить отзыв
-
+// Добавление отзыва к заданию
 router.post('/:questId/review', authenticate, questController.addReview);
 
-// Рендер страницы заданий
-
+// Отображение страницы со списком заданий
 router.get('/view', questController.renderQuests);
 
 module.exports = router;

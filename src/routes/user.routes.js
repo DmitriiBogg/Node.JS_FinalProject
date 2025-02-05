@@ -2,22 +2,22 @@ const express = require('express');
 const router = express.Router();
 const userController = require('../controllers/user.controller');
 
-// Создать пользователя (регистрация)
+// Регистрация нового пользователя
 router.post('/register', userController.registerUser);
 
-// Логин пользователя
+// Вход в систему
 router.post('/login', userController.loginUser);
 
-// Рендер страницы регистрации
+// Отображение страницы регистрации
 router.get('/register/view', userController.renderRegister);
 
-// Рендер страницы логина
+// Отображение страницы входа
 router.get('/login/view', userController.renderLogin);
 
-// API для рейтинга пользователей
+// Получение рейтинга пользователей
 router.get('/leaderboard', userController.getUserLeaderboard);
 
-// Страница рейтинга пользователей
+// Отображение страницы с рейтингом пользователей
 router.get('/leaderboard/view', userController.renderUserLeaderboard);
 
 module.exports = router;

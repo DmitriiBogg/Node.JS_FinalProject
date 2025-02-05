@@ -17,11 +17,10 @@ module.exports = {
       next(err);
     }
   },
+
   assignAchievement: async (req, res, next) => {
     try {
       const { characterId } = req.body;
-
-      // Проверка на наличие characterId
       if (!characterId) {
         return res.status(401).json({ error: 'Character ID is required' });
       }
@@ -36,17 +35,14 @@ module.exports = {
         return res.status(404).json({ error: 'Character not found' });
       }
 
-      if (
-        character.achievements &&
-        character.achievements.includes(req.params.achievementId)
-      ) {
+      //  Проверка на наличие достижения перед добавлением
+      if (character.achievements.includes(achievement._id)) {
         return res
           .status(400)
           .json({ error: 'Achievement already assigned to this character.' });
       }
 
-      character.achievements = character.achievements || []; // Защита от null
-      character.achievements.push(req.params.achievementId);
+      character.achievements.push(achievement._id);
       await character.save();
 
       res
@@ -56,15 +52,14 @@ module.exports = {
       next(err);
     }
   },
+
   checkAndAssignAchievements: async (character) => {
     try {
       const achievements = await Achievement.find();
-
-      character.achievements = character.achievements || []; // Защита от null
+      character.achievements = character.achievements || [];
 
       for (const achievement of achievements) {
         if (!character.achievements.includes(achievement._id)) {
-          // проверка условий для достижения
           if (
             (achievement.criteria === 'gold' &&
               character.gold >= achievement.threshold) ||
@@ -74,9 +69,6 @@ module.exports = {
               character.completedQuests >= achievement.threshold)
           ) {
             character.achievements.push(achievement._id);
-            console.log(
-              `Achievement "${achievement.title}" assigned to character "${character.name}"`,
-            );
           }
         }
       }
