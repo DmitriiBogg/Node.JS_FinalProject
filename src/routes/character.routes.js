@@ -7,7 +7,7 @@ const {
 } = require('../middlewares/auth.middleware');
 
 // Создание нового персонажа
-router.post('/', authenticate, characterController.createCharacter);
+router.post('/create', authenticate, characterController.createCharacter);
 
 // Удаление персонажа по ID
 router.delete('/:id', authenticate, characterController.deleteCharacter);
@@ -39,7 +39,7 @@ router.get('/', characterController.getCharacters);
 router.get('/leaderboard', characterController.getLeaderboard);
 
 // Отображение страницы со списком персонажей
-router.get('/view', characterController.renderCharacters);
+router.get('/view', authenticate, characterController.renderCharacters);
 
 // Отображение страницы с рейтингом персонажей
 router.get('/leaderboard/view', characterController.renderLeaderboard);

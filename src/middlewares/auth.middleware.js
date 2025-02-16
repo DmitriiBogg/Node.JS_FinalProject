@@ -6,49 +6,35 @@ module.exports = {
       console.log('Authenticate middleware triggered');
     }
 
-    if (!req.headers.authorization) {
-      if (process.env.NODE_ENV !== 'production') {
-        console.log('No authorization header provided');
-      }
-      return res.status(401).json({ error: 'Access denied.' });
-    }
+    // Проверяем токен в cookies или в заголовке Authorization
+    const token =
+      req.cookies?.token ||
+      (req.headers.authorization?.startsWith('Bearer ')
+        ? req.headers.authorization.split(' ')[1]
+        : null);
 
-    const parts = req.headers.authorization.split(' ');
-    if (parts.length !== 2 || parts[0] !== 'Bearer') {
-      if (process.env.NODE_ENV !== 'production') {
-        console.log('Invalid authorization header format');
-      }
-      return res.status(401).json({ error: 'Access denied.' });
-    }
-
-    const token = parts[1];
     if (!token) {
-      if (process.env.NODE_ENV !== 'production') {
-        console.log('No token provided');
-      }
-      return res.status(401).json({ error: 'Access denied.' });
+      console.log('No token provided');
+      req.flash('error', 'Access denied. Please log in.');
+      return res.redirect('/');
     }
 
     try {
       const decoded = jwt.verify(token, process.env.JWT_SECRET);
 
       if (!decoded.exp || Date.now() >= decoded.exp * 1000) {
-        if (process.env.NODE_ENV !== 'production') {
-          console.log('Token has expired or is missing expiration');
-        }
-        return res.status(401).json({ error: 'Access denied.' });
+        console.log('Token has expired or is missing expiration');
+        req.flash('error', 'Session expired. Please log in again.');
+        return res.redirect('/');
       }
 
       req.user = decoded;
-      if (process.env.NODE_ENV !== 'production') {
-        console.log('Authentication successful:', req.user);
-      }
+      console.log('Authentication successful:', req.user);
       next();
     } catch (err) {
-      if (process.env.NODE_ENV !== 'production') {
-        console.log('Invalid token:', err.message);
-      }
-      res.status(401).json({ error: 'Access denied.' });
+      console.log('Invalid token:', err.message);
+      req.flash('error', 'Invalid session. Please log in again.');
+      return res.redirect('/');
     }
   },
 
@@ -59,15 +45,12 @@ module.exports = {
 
     const user = req.user;
     if (!user || user.role !== role) {
-      if (process.env.NODE_ENV !== 'production') {
-        console.log('Access denied for role:', role);
-      }
-      return res.status(403).json({ error: 'Access denied.' });
+      console.log('Access denied for role:', role);
+      req.flash('error', 'Access denied. Insufficient permissions.');
+      return res.redirect('/');
     }
 
-    if (process.env.NODE_ENV !== 'production') {
-      console.log('Authorization successful for role:', role);
-    }
+    console.log('Authorization successful for role:', role);
     next();
   },
 };

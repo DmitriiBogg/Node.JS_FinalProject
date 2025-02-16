@@ -1,12 +1,34 @@
 const express = require('express');
 const router = express.Router();
 const User = require('../models/user.model');
+const Quest = require('../models/quest.model');
+const Achievement = require('../models/achievement.model');
 const {
   authenticate,
   authorizeRole,
 } = require('../middlewares/auth.middleware');
 
-//  Получение списка всех пользователей (доступно только администратору)
+// Рендеринг страницы админа с пользователями и flash-сообщениями
+router.get(
+  '/view',
+  authenticate,
+  authorizeRole('admin'),
+  async (req, res, next) => {
+    try {
+      const users = await User.find(); // Загружаем всех пользователей
+      console.log('Flash messages:', req.flash('success'), req.flash('error'));
+      res.render('admin', {
+        users,
+        success: req.flash('success') || [],
+        error: req.flash('error') || [],
+      });
+    } catch (err) {
+      next(err);
+    }
+  },
+);
+
+// Получение списка пользователей
 router.get(
   '/users',
   authenticate,
@@ -21,7 +43,7 @@ router.get(
   },
 );
 
-//  Удаление пользователя (доступно только администратору)
+// Удаление пользователя
 router.delete(
   '/users/:id',
   authenticate,
@@ -30,15 +52,19 @@ router.delete(
     try {
       const user = await User.findByIdAndDelete(req.params.id);
       if (!user) {
-        return res.status(404).json({ error: 'User not found' });
+        req.flash('error', 'User not found.');
+        return res.redirect('/admin/view');
       }
-      res.status(200).json({ message: 'User deleted successfully' });
+      req.flash('success', 'User deleted successfully.');
+      res.redirect('/admin/view');
     } catch (err) {
-      next(err);
+      req.flash('error', 'Error deleting user.');
+      res.redirect('/admin/view');
     }
   },
 );
-//  Изменение роли пользователя (доступно только администратору)
+
+// Изменение роли пользователя
 router.put(
   '/users/:id/role',
   authenticate,
@@ -47,7 +73,8 @@ router.put(
     try {
       const { role } = req.body;
       if (!['admin', 'member'].includes(role)) {
-        return res.status(400).json({ error: 'Invalid role' });
+        req.flash('error', 'Invalid role.');
+        return res.redirect('/admin/view');
       }
 
       const user = await User.findByIdAndUpdate(
@@ -55,15 +82,90 @@ router.put(
         { role },
         { new: true, runValidators: true },
       );
-
       if (!user) {
-        return res.status(404).json({ error: 'User not found' });
+        req.flash('error', 'User not found.');
+        return res.redirect('/admin/view');
       }
 
-      res.status(200).json({ message: 'User role updated successfully', user });
+      req.flash('success', 'User role updated successfully.');
+      res.redirect('/admin/view');
     } catch (err) {
-      next(err);
+      req.flash('error', 'Error updating user role.');
+      res.redirect('/admin/view');
     }
   },
 );
+
+// Создание нового задания
+router.post(
+  '/quests',
+  authenticate,
+  authorizeRole('admin'),
+  async (req, res) => {
+    try {
+      const { title, description, difficulty, reward } = req.body;
+
+      if (!title || !description || !difficulty) {
+        req.flash('error', 'All fields are required.');
+        return res.redirect('/admin/view');
+      }
+
+      if (title.length < 3 || description.length < 10) {
+        req.flash(
+          'error',
+          'Title must be at least 3 characters and description at least 10.',
+        );
+        return res.redirect('/admin/view');
+      }
+
+      await Quest.create({ title, description, difficulty, reward });
+
+      req.flash('success', 'Quest created successfully!');
+      res.redirect('/admin/view');
+    } catch (err) {
+      req.flash('error', 'Error creating quest.');
+      res.redirect('/admin/view');
+    }
+  },
+);
+
+// Создание новой ачивки
+router.post(
+  '/achievements',
+  authenticate,
+  authorizeRole('admin'),
+  async (req, res) => {
+    try {
+      const { title, description, criteria, threshold, reward } = req.body;
+
+      if (!title || !description || !criteria || !threshold) {
+        req.flash('error', 'All fields are required.');
+        return res.redirect('/admin/view');
+      }
+
+      if (title.length < 3 || description.length < 5) {
+        req.flash(
+          'error',
+          'Title must be at least 3 characters and description at least 5.',
+        );
+        return res.redirect('/admin/view');
+      }
+
+      await Achievement.create({
+        title,
+        description,
+        criteria,
+        threshold,
+        reward,
+      });
+
+      req.flash('success', 'Achievement created successfully!');
+      res.redirect('/admin/view');
+    } catch (err) {
+      req.flash('error', 'Error creating achievement.');
+      res.redirect('/admin/view');
+    }
+  },
+);
+
 module.exports = router;

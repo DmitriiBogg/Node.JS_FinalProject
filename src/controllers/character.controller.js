@@ -19,7 +19,7 @@ module.exports = {
         userId,
       });
 
-      res.status(201).json(newCharacter);
+      res.redirect('/characters/view');
     } catch (err) {
       next(err);
     }
@@ -163,10 +163,16 @@ module.exports = {
   //  Отображение страницы со списком персонажей
   renderCharacters: async (req, res, next) => {
     try {
+      // Загружаем всех персонажей текущего пользователя
       const characters = await Character.find({ userId: req.user.id }).populate(
         'achievements',
       );
-      res.render('characters', { characters });
+
+      // Загружаем все доступные задания
+      const quests = await Quest.find({});
+
+      // Рендерим страницу с персонажами и заданиями
+      res.render('characters', { characters, quests });
     } catch (err) {
       next(err);
     }

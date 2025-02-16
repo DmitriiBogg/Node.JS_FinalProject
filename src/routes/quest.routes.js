@@ -36,5 +36,7 @@ router.post('/:questId/review', authenticate, questController.addReview);
 
 // Отображение страницы со списком заданий
 router.get('/view', questController.renderQuests);
+// юзер берет задание (фронт)
+router.post('/take/:id', authenticate, questController.takeQuest);
 
 module.exports = router;

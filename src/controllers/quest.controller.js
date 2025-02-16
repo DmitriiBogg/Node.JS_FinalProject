@@ -6,15 +6,28 @@ module.exports = {
   createQuest: async (req, res, next) => {
     try {
       const { title, description, difficulty, reward } = req.body;
+
+      if (!title || title.length < 3) {
+        req.flash('error', 'Title must be at least 3 characters long');
+        return res.redirect('/admin/view');
+      }
+      if (!description || description.length < 10) {
+        req.flash('error', 'Description must be at least 10 characters long');
+        return res.redirect('/admin/view');
+      }
+
       const newQuest = await Quest.create({
         title,
         description,
         difficulty,
         reward,
       });
-      res.status(201).json(newQuest);
+
+      req.flash('success', 'Quest created successfully');
+      res.redirect('/admin/view');
     } catch (err) {
-      next(err);
+      req.flash('error', 'Failed to create quest');
+      res.redirect('/admin/view');
     }
   },
 
@@ -56,7 +69,42 @@ module.exports = {
       next(err);
     }
   },
+  // Метод для взятия задания (front)
+  takeQuest: async (req, res, next) => {
+    try {
+      const { id } = req.params; // ID квеста из URL
+      const userId = req.user.id; // ID текущего пользователя
 
+      // Найти квест
+      const quest = await Quest.findById(id);
+      if (!quest) {
+        req.flash('error', 'Quest not found.');
+        return res.redirect('/quests/view');
+      }
+
+      // Найти персонажа пользователя
+      const character = await Character.findOne({ userId });
+      if (!character) {
+        req.flash('error', 'Character not found.');
+        return res.redirect('/quests/view');
+      }
+
+      // Проверяем, не взят ли уже этот квест
+      if (character.activeQuests.includes(id)) {
+        req.flash('error', 'You have already taken this quest.');
+        return res.redirect('/quests/view');
+      }
+
+      // Добавляем квест в список активных
+      character.activeQuests.push(id);
+      await character.save();
+
+      req.flash('success', 'Quest successfully taken!');
+      res.redirect('/quests/view');
+    } catch (err) {
+      next(err);
+    }
+  },
   // Назначение задания персонажу
   assignQuestToCharacter: async (req, res, next) => {
     try {

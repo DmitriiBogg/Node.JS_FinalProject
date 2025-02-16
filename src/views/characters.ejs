@@ -3,52 +3,60 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Characters</title>
+    <title>My Characters</title>
     <link rel="stylesheet" href="/styles.css">
 </head>
 <body>
     <div class="container">
-        <h1>Your Characters</h1>
+        <h2>My Characters</h2>
 
-        <!--  Форма для создания нового персонажа -->
-        <form action="/api/characters" method="POST" class="form-container">
-            <label for="name">Character Name:</label>
+        <!-- Список персонажей -->
+        <ul>
+            <% characters.forEach(character => { %>
+                <li>
+                    <strong><%= character.name %></strong> (Level: <%= character.level %>)
+                    <form action="/characters/delete/<%= character._id %>" method="POST" style="display:inline;">
+                        <button type="submit">Delete</button>
+                    </form>
+                </li>
+            <% }); %>
+        </ul>
+
+        <!-- Форма для создания персонажа -->
+        <h3>Create New Character</h3>
+        <form action="/characters/create" method="POST">
+            <label for="name">Name:</label>
             <input type="text" id="name" name="name" required>
-
+            
             <label for="class">Class:</label>
-            <select id="class" name="class" required>
+            <select id="class" name="class">
                 <option value="Warrior">Warrior</option>
                 <option value="Mage">Mage</option>
-                <option value="Ranger">Ranger</option>
+                <option value="Rogue">Rogue</option>
             </select>
 
-            <button type="submit" class="button">Create Character</button>
+            <button type="submit" class ="button">Create</button>
         </form>
 
-        <!--  Список существующих персонажей -->
-        <% if (characters && characters.length > 0) { %>
-            <% characters.forEach(character => { %>
-                <div class="list-container">
-                    <h2><%= character.name %> (Level: <%= character.level %>)</h2>
-                    <p>Class: <%= character.class %></p>
-                    <p>Gold: <%= character.gold %></p>
-                    <p>Experience: <%= character.experience %> XP</p>
+        <!-- Доступные задания -->
+        <h3>Available Quests</h3>
+        <ul>
+            <% if (quests && quests.length) { %>
+                <% quests.forEach(quest => { %>
+                    <li>
+                        <strong><%= quest.title %></strong> - Reward: <%= quest.gold %> Gold
+                        <form action="/quests/take/<%= quest._id %>" method="POST">
+                            <button type="submit" class ="button">Take Quest</button>
+                        </form>
+                    </li>
+                <% }); %>
+            <% } else { %>
+                <p>No quests available.</p>
+            <% } %>
+        </ul>
+        
 
-                    <h3>Achievements:</h3>
-                    <% if (character.achievements && character.achievements.length > 0) { %>
-                        <ul>
-                            <% character.achievements.forEach(achievement => { %>
-                                <li><strong><%= achievement.title %></strong> - <%= achievement.description %></li>
-                            <% }); %>
-                        </ul>
-                    <% } else { %>
-                        <p>No achievements yet.</p>
-                    <% } %>
-                </div>
-            <% }); %>
-        <% } else { %>
-            <p>No characters found.</p>
-        <% } %>
+        <a href="/logout">Logout</a>
     </div>
 </body>
 </html>

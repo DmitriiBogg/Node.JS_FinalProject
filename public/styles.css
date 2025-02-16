@@ -1,8 +1,8 @@
 /* Общие стили */
 body {
-  background-color: #2c1d14; /* Тёмно-коричневый фон */
-  color: #e0c28a; /* Золотистый текст */
-  font-family: 'Georgia', serif; /* Средневековой стиль */
+  background-color: #f5e1c8; /* Светло-песочный фон */
+  color: #4d3319; /* Тёмно-коричневый текст */
+  font-family: 'Georgia', serif;
   margin: 0;
   padding: 0;
 }
@@ -11,7 +11,7 @@ body {
 h1,
 h2 {
   text-align: center;
-  color: #f4d35e; /* Яркое золотое */
+  color: #d4af37; /* Золотой */
 }
 
 /* Основные контейнеры */
@@ -19,15 +19,21 @@ h2 {
   max-width: 800px;
   margin: auto;
   padding: 20px;
-  background: rgba(20, 10, 5, 0.9); /* Тёмный, полупрозрачный фон */
-  border-radius: 10px;
-  box-shadow: 0px 0px 15px rgba(255, 165, 0, 0.5); /* Огонь */
+  background: rgba(
+    245,
+    222,
+    179,
+    0.95
+  ); /* Светлый фон с лёгкой прозрачностью */
+  border-radius: 15px;
+  box-shadow: 0px 0px 20px rgba(139, 69, 19, 0.4); /* Более мягкая и широкая тень */
+  border: 3px solid rgba(139, 69, 19, 0.2); /* Мягкая и неяркая рамка */
 }
 
 /* Стилизуем список заданий, персонажей, пользователей */
 .list-container {
-  background: #c4a484; /* Цвет свитка */
-  border: 2px solid #8b5a2b; /* Коричневая рамка */
+  background: #eed9c4; /* Светло-коричневый фон */
+  border: 2px solid #c29d74;
   padding: 15px;
   margin: 20px auto;
   border-radius: 10px;
@@ -39,7 +45,7 @@ h2 {
   display: inline-block;
   padding: 10px 20px;
   margin: 10px;
-  background: #8b5a2b; /* Коричневый фон */
+  background: #4b7f52; /* Тёмно-зелёный */
   color: #fff;
   text-decoration: none;
   border-radius: 5px;
@@ -48,7 +54,26 @@ h2 {
 }
 
 .button:hover {
-  background: #a67c52; /* Светлее при наведении */
+  background: #6aa469; /* Светло-зелёный */
+}
+
+/* Выравнивание полей ввода под заголовками */
+form label {
+  display: block;
+  font-weight: bold;
+  margin-top: 10px;
+  color: #d4af37; /* Золотой */
+}
+
+form input,
+form select {
+  width: 100%;
+  padding: 8px;
+  margin-top: 5px;
+  border: 1px solid #c29d74;
+  border-radius: 5px;
+  background: #fdf5e6;
+  color: #4d3319;
 }
 
 /* Анимация при наведении */

@@ -1,0 +1,84 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Admin Dashboard</title>
+    <link rel="stylesheet" href="/styles.css">
+</head>
+<body>
+    <div class="container">
+
+        
+        <h2>Admin Dashboard</h2>
+
+        <!-- Список пользователей -->
+        <h3>Users</h3>
+        <ul>
+            <% users.forEach(user => { %>
+                <li>
+                    <%= user.email %> (Role: <%= user.role %>)
+                    <form action="/admin/users/<%= user._id %>?_method=DELETE" method="POST" style="display:inline;">
+                        <button type="submit" class ="button">Delete</button>
+                    </form>
+                </li>
+            <% }); %>
+        </ul>
+
+        <!-- Форма для создания нового задания -->
+        <h3>Create New Quest</h3>
+        <form action="/api/quests" method="POST">
+            <label for="title">Title:</label>
+            <input type="text" id="title" name="title" required>
+
+            <label for="description">Description:</label>
+            <textarea id="description" name="description" required></textarea>
+
+            <label for="difficulty">Difficulty:</label>
+            <select id="difficulty" name="difficulty">
+                <option value="easy">Easy</option>
+                <option value="medium">Medium</option>
+                <option value="hard">Hard</option>
+            </select>
+
+            <label for="gold">Gold Reward:</label>
+            <input type="number" id="gold" name="reward[gold]" min="0" required>
+
+            <label for="experience">Experience Reward:</label>
+            <input type="number" id="experience" name="reward[experience]" min="0" required>
+
+            <button type="submit" class ="button">Create Quest</button>
+        </form>
+
+        <!-- Форма для создания новой ачивки -->
+        <h3>Create New Achievement</h3>
+        <form action="/api/achievements" method="POST">
+            <label for="ach_title">Title:</label>
+            <input type="text" id="ach_title" name="title" required>
+
+            <label for="ach_description">Description:</label>
+            <textarea id="ach_description" name="description" required></textarea>
+
+            <label for="criteria">Criteria:</label>
+            <select id="criteria" name="criteria">
+                <option value="gold">Gold</option>
+                <option value="level">Level</option>
+                <option value="quests">Completed Quests</option>
+            </select>
+
+            <label for="threshold">Threshold:</label>
+            <input type="number" id="threshold" name="threshold" min="1" required>
+
+            <label for="ach_gold">Gold Reward:</label>
+            <input type="number" id="ach_gold" name="reward[gold]" min="0" required>
+
+            <label for="ach_experience">Experience Reward:</label>
+            <input type="number" id="ach_experience" name="reward[experience]" min="0" required>
+
+            <button type="submit" class ="button">Create Achievement</button>
+        </form>
+
+        <a href="/logout" class ="button">Logout</a>
+    </div>
+</body>
+</html>
