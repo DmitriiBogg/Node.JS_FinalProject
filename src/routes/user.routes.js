@@ -19,5 +19,12 @@ router.get('/leaderboard', userController.getUserLeaderboard);
 
 // Отображение страницы с рейтингом пользователей
 router.get('/leaderboard/view', userController.renderUserLeaderboard);
-
+// выход из профиля и рендер на главную страницу
+router.get('/logout', (req, res) => {
+  if (!req.cookies?.token) {
+    return res.status(400).json({ error: 'You are not logged in' });
+  }
+  res.clearCookie('token'); // Очистка JWT токена
+  res.redirect('/'); //  редиректит на index.ejs
+});
 module.exports = router;

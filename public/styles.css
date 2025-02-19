@@ -1,84 +1,126 @@
 /* Общие стили */
 body {
-  background-color: #f5e1c8; /* Светло-песочный фон */
-  color: #4d3319; /* Тёмно-коричневый текст */
-  font-family: 'Georgia', serif;
+  background-image: url('images/tawern.jpg');
+  background-repeat: no-repeat;
+  background-position: center center;
+  background-attachment: fixed;
+  background-size: cover;
+
+  color: #d4af37; /* Золотой текст */
+  font-family: 'Garamond', serif;
   margin: 0;
   padding: 0;
+  text-align: center;
 }
 
-/* Стили заголовков */
+/* Контейнер */
+.container {
+  max-width: 900px;
+  margin: 50px auto;
+  padding: 20px;
+  background: rgba(56, 38, 19, 0.95); /* Тёмное дерево с легкой прозрачностью */
+  border-radius: 15px;
+  box-shadow: 0px 0px 25px rgba(255, 165, 0, 0.6); /* Золотое свечение */
+  border: 3px solid rgba(255, 215, 0, 0.6);
+}
+
+/* Заголовки */
 h1,
 h2 {
-  text-align: center;
-  color: #d4af37; /* Золотой */
+  color: #ffcc00; /* Яркий золотой, как огонь в камине */
+  text-shadow: 2px 2px 5px rgba(255, 140, 0, 0.7); /* Эффект свечения */
 }
 
-/* Основные контейнеры */
-.container {
-  max-width: 800px;
-  margin: auto;
-  padding: 20px;
-  background: rgba(
-    245,
-    222,
-    179,
-    0.95
-  ); /* Светлый фон с лёгкой прозрачностью */
-  border-radius: 15px;
-  box-shadow: 0px 0px 20px rgba(139, 69, 19, 0.4); /* Более мягкая и широкая тень */
-  border: 3px solid rgba(139, 69, 19, 0.2); /* Мягкая и неяркая рамка */
-}
-
-/* Стилизуем список заданий, персонажей, пользователей */
-.list-container {
-  background: #eed9c4; /* Светло-коричневый фон */
-  border: 2px solid #c29d74;
-  padding: 15px;
+/* Таблицы */
+.leaderboard-table {
+  width: 100%;
+  border-collapse: collapse;
   margin: 20px auto;
-  border-radius: 10px;
-  box-shadow: inset 0px 0px 8px rgba(0, 0, 0, 0.3);
+  background: rgba(38, 25, 11, 0.9); /* Темное дерево */
+  color: #ffd700;
+  border: 3px solid #8b5a2b; /* Цвет старого дерева */
+  box-shadow: 0px 0px 15px rgba(255, 165, 0, 0.4); /* Легкое золотое свечение */
 }
 
-/* Кнопки */
+.leaderboard-table th,
+.leaderboard-table td {
+  padding: 12px;
+  text-align: center;
+  border: 1px solid #b8860b; /* Цвет бронзы */
+  font-weight: bold;
+}
+
+.leaderboard-table th {
+  background: linear-gradient(to bottom, #8b4513, #4b2d0d); /* Темное дерево */
+  color: #ffcc00;
+  text-shadow: 1px 1px 4px rgba(255, 165, 0, 0.8);
+}
+
+/* Кнопки сортировки */
+.sort-buttons {
+  margin-bottom: 20px;
+}
+
+.sort-link {
+  padding: 10px 15px;
+  background: #d4af37;
+  color: #3b2417;
+  text-decoration: none;
+  font-weight: bold;
+  border-radius: 5px;
+  margin: 0 10px;
+  box-shadow:
+    inset 0px 3px 5px rgba(255, 140, 0, 0.7),
+    0px 0px 10px rgba(255, 215, 0, 0.6);
+  transition: 0.2s ease-in-out;
+}
+
+.sort-link:hover {
+  background: #ffcc00;
+  color: #000;
+  transform: scale(1.1);
+}
+
+/* Кнопка "Назад" */
+.back-button-container {
+  margin-top: 20px;
+}
+
 .button {
   display: inline-block;
-  padding: 10px 20px;
-  margin: 10px;
-  background: #4b7f52; /* Тёмно-зелёный */
-  color: #fff;
+  padding: 12px 20px;
+  background: linear-gradient(to bottom, #c47f26, #8b5a2b);
+  color: #fff3b0;
   text-decoration: none;
-  border-radius: 5px;
   font-weight: bold;
-  box-shadow: 0px 3px 5px rgba(0, 0, 0, 0.5);
+  border-radius: 5px;
+  border: 2px solid #ffcc00;
+  box-shadow:
+    0px 3px 5px rgba(255, 215, 0, 0.5),
+    0px 0px 12px rgba(255, 165, 0, 0.6);
+  transition: 0.3s;
 }
 
 .button:hover {
-  background: #6aa469; /* Светло-зелёный */
+  background: #ffcc00;
+  color: #3b2417;
+  transform: scale(1.1);
 }
 
-/* Выравнивание полей ввода под заголовками */
-form label {
-  display: block;
-  font-weight: bold;
-  margin-top: 10px;
-  color: #d4af37; /* Золотой */
+/* Светящаяся рамка для контейнера */
+.container:hover {
+  box-shadow:
+    0px 0px 40px rgba(255, 165, 0, 0.8),
+    0px 0px 20px rgba(255, 215, 0, 0.5);
+  transition: 0.3s ease-in-out;
 }
 
-form input,
-form select {
-  width: 100%;
-  padding: 8px;
-  margin-top: 5px;
-  border: 1px solid #c29d74;
-  border-radius: 5px;
-  background: #fdf5e6;
-  color: #4d3319;
-}
-
-/* Анимация при наведении */
-.list-container:hover {
-  box-shadow: inset 0px 0px 12px rgba(0, 0, 0, 0.5);
-  transform: scale(1.02);
-  transition: 0.2s;
+/* Декоративные элементы */
+hr {
+  border: none;
+  height: 2px;
+  background: #8b5a2b;
+  box-shadow: 0px 0px 10px rgba(255, 140, 0, 0.6);
+  margin: 20px auto;
+  width: 80%;
 }

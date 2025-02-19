@@ -1,0 +1,75 @@
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Leaderboard</title>
+    <link rel="stylesheet" href="/styles.css"> 
+</head>
+<body>
+    <div class="container">
+        <h1>Leaderboard</h1>
+
+        <!-- Кнопки сортировки -->
+        <div class="sort-buttons">
+            <a href="/leaderboard?sort=rating" class="sort-link">🏆 Rating Sort</a>
+            <a href="/leaderboard?sort=level" class="sort-link">⚔️ Level Sort</a>
+        </div>
+
+        <!-- Таблица с рейтингом пользователей -->
+        <h2>Top Users</h2>
+        <table class="leaderboard-table">
+            <thead>
+                <tr>
+                    <th>#</th>
+                    <th>Name</th>
+                    <th>LVL</th>
+                    <th>Rating</th>
+                </tr>
+            </thead>
+            <tbody>
+                <% leaderboard.forEach((user, index) => { %>
+                    <tr>
+                        <td><%= index + 1 %></td>
+                        <td><%= user.email %></td> 
+                        <td><%= user.totalLevel %></td>
+                        <td><%= user.rating %></td>
+                    </tr>
+                <% }); %>
+            </tbody>
+        </table>
+
+        <!-- Таблица персонажей -->
+        <h2>Characters Leaderboard</h2>
+        <table class="leaderboard-table">
+            <thead>
+                <tr>
+                    <th>#</th>
+                    <th>Name</th>
+                    <th>Class</th>
+                    <th>LVL</th>
+                </tr>
+            </thead>
+            <tbody>
+                <% characterLeaderboard.forEach((char, index) => { %>
+                    <tr>
+                        <td><%= index + 1 %></td>
+                        <td><%= char.name %></td>
+                        <td><%= char.class %></td>
+                        <td><%= char.level %></td>
+                    </tr>
+                <% }); %>
+            </tbody>
+        </table>
+
+        <!-- Кнопка "Назад" -->
+        <div class="back-button-container">
+            <% if (typeof user !== 'undefined' && user) { %>
+                <a href="<%= user.role === 'admin' ? '/admin/view' : '/characters/view' %>" class="button">Back</a>
+            <% } else { %>
+                <a href="/" class="button">Back</a>
+            <% } %>
+        </div>
+    </div>
+</body>
+</html>

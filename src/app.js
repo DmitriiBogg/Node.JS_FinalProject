@@ -44,6 +44,7 @@ app.use(express.urlencoded({ extended: true }));
 //  Подключение маршрутов
 app.use('/', indexRoutes);
 app.use('/auth', authRoutes);
+app.use('/', userRoutes);
 app.use('/api/users', userRoutes);
 app.use('/api/characters', characterRoutes);
 app.use('/api/quests', questRoutes);

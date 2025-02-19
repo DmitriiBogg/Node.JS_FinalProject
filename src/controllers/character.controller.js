@@ -163,6 +163,10 @@ module.exports = {
   //  Отображение страницы со списком персонажей
   renderCharacters: async (req, res, next) => {
     try {
+      console.log(
+        ' Rendering characters.ejs for user:',
+        req.user ? req.user.id : 'No user!',
+      );
       // Загружаем всех персонажей текущего пользователя
       const characters = await Character.find({ userId: req.user.id }).populate(
         'achievements',
