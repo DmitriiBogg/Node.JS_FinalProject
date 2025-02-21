@@ -4,21 +4,36 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>My Characters</title>
-    <link rel="stylesheet" href="/styles.css">
+    <link rel="stylesheet" href="/styles/main.css">
+    <link rel="stylesheet" href="/styles/characters.css">
 </head>
 <body>
     <div class="container">
         <h2>My Characters</h2>
+    
         <!-- Кнопка для перехода на Leaderboard -->
-        <a href="/leaderboard/view" class="button">🏆 Leaderboard</a>
+        <a href="/leaderboard/view" class="leaderboard-button">🏆 Leaderboard</a>
+
+        <!-- Вывод flash-сообщений -->
+<% if (success) { %>
+    <div class="alert alert-success"><%= success %></div>
+<% } %>
+<% if (error) { %>
+    <div class="alert alert-danger"><%= error %></div>
+<% } %>
+    
         <!-- Список персонажей -->
-        <ul>
+        <ul class="character-list">
             <% characters.forEach(character => { %>
-                <li>
-                    <strong><%= character.name %></strong> (Level: <%= character.level %>)
-                    <form action="/characters/delete/<%= character._id %>" method="POST" style="display:inline;">
-                        <button type="submit">Delete</button>
-                    </form>
+                <li class="character-item">
+                    <div class="character-avatar <%= character.class.toLowerCase() %>"></div>
+                    <div class="character-info">
+                        <strong><%= character.name %></strong> (Level: <%= character.level %>)
+                    </div>
+                    <form action="/characters/<%= character._id %>?_method=DELETE" method="POST">
+                        <input type="hidden" name="_csrf" value="<%= _csrf %>">
+                        <button type="submit" class="button delete-button">Delete</button>
+                    </form>                                       
                 </li>
             <% }); %>
         </ul>
@@ -26,6 +41,8 @@
         <!-- Форма для создания персонажа -->
         <h3>Create New Character</h3>
         <form action="/characters/create" method="POST">
+            <input type="hidden" name="_csrf" value="<%= _csrf %>">
+            
             <label for="name">Name:</label>
             <input type="text" id="name" name="name" required>
             
@@ -36,28 +53,31 @@
                 <option value="Ranger">Ranger</option>
             </select>
 
-            <button type="submit" class ="button">Create</button>
+            <button type="submit" class="button">Create</button>
         </form>
 
         <!-- Доступные задания -->
         <h3>Available Quests</h3>
-        <ul>
-            <% if (quests && quests.length) { %>
+
+        <% if (quests && quests.length) { %>
+            <div class="quest-container">
                 <% quests.forEach(quest => { %>
-                    <li>
-                        <strong><%= quest.title %></strong> - Reward: <%= quest.gold %> Gold
+                    <div class="quest-card">
+                        <h3><%= quest.title %></h3>
+                        <p><strong>Reward:</strong> <%= quest.gold %> Gold</p>
                         <form action="/quests/take/<%= quest._id %>" method="POST">
-                            <button type="submit" class ="button">Take Quest</button>
+                            <input type="hidden" name="_csrf" value="<%= _csrf %>">
+                            <button type="submit" class="quest-button">Take Quest</button>
                         </form>
-                    </li>
+                    </div>
                 <% }); %>
-            <% } else { %>
-                <p>No quests available.</p>
-            <% } %>
-        </ul>
+            </div>
+        <% } else { %>
+            <p>No quests available.</p>
+        <% } %>
         
 
-        <a href="/logout">Logout</a>
+        <a href="/logout" class="button logout-button">Logout</a>
     </div>
 </body>
 </html>

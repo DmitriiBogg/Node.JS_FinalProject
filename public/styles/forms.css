@@ -1,0 +1,40 @@
+/* === Глобальные стили для форм === */
+.form-grid {
+  display: grid;
+  grid-template-columns: 1fr 2fr;
+  gap: 10px;
+  max-width: 600px;
+  margin: 0 auto;
+}
+
+.form-grid label {
+  text-align: right;
+  font-weight: bold;
+  color: #ffd700;
+}
+
+.form-grid input,
+.form-grid textarea,
+.form-grid select {
+  width: 100%;
+  padding: 8px;
+  border: 1px solid #b8860b;
+  border-radius: 5px;
+  background: rgba(38, 25, 11, 0.7);
+  color: #ffd700;
+}
+
+.form-grid button {
+  grid-column: span 2;
+  margin-top: 10px;
+}
+
+.button-link {
+  color: #ffcc00;
+  text-decoration: none;
+  font-weight: bold;
+}
+
+.button-link:hover {
+  text-decoration: underline;
+}

@@ -4,6 +4,7 @@ const dotenv = require('dotenv').config();
 const path = require('path');
 const session = require('express-session');
 const flash = require('connect-flash');
+const csrf = require('csurf');
 const cookieParser = require('cookie-parser');
 
 const indexRoutes = require('./routes/index.routes');
@@ -14,7 +15,7 @@ const questRoutes = require('./routes/quest.routes');
 const achievementRoutes = require('./routes/achievement.routes');
 const authRoutes = require('./routes/auth.routes');
 const { errorHandler } = require('./middlewares/error.middleware');
-
+const methodOverride = require('method-override');
 const app = express();
 
 //  Настройка EJS
@@ -31,15 +32,23 @@ app.use(
 );
 
 app.use(flash());
-app.use(cookieParser()); // для работы с token (что бы не забывался пользователь если он добавлен... )
+app.use(cookieParser()); // Для работы с token
 
-//  Middleware
-app.use((req, res, next) => {
-  res.locals.error = req.flash('error');
-  next();
-});
+// Подключаем body-parser перед CSRF-защитой
 app.use(express.json());
 app.use(express.urlencoded({ extended: true }));
+app.use(methodOverride('_method'));
+// CSRF защита
+app.use(csrf());
+
+// Передаём CSRF-токен в шаблоны
+app.use((req, res, next) => {
+  res.locals.success = req.flash('success');
+  res.locals.error = req.flash('error');
+  res.locals._csrf = req.csrfToken();
+  res.locals.user = req.user || null;
+  next();
+});
 
 //  Подключение маршрутов
 app.use('/', indexRoutes);
@@ -66,8 +75,6 @@ app.use(errorHandler);
 //  Подключение к MongoDB
 mongoose
   .connect(process.env.MONGO_URI, {
-    useNewUrlParser: true,
-    useUnifiedTopology: true,
     serverSelectionTimeoutMS: 5000,
   })
   .then(() => console.log('Connected to MongoDB'))

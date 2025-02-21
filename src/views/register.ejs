@@ -4,14 +4,15 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Register</title>
-    <link rel="stylesheet" href="/styles.css">
+    <link rel="stylesheet" href="/styles/main.css">
+    <link rel="stylesheet" href="/styles/forms.css">
 </head>
 <body>
     <div class="container">
         <h2>Register</h2>
 
-        <!-- Блок для отображения ошибок из урока week12 -->
-        <% if (error.length > 0) { %>
+        <!-- Блок для отображения ошибок -->
+        <% if (error && error.length > 0) { %>
             <div class="error">
                 <% error.forEach(err => { %>
                     <p><%= err %></p>
@@ -20,6 +21,9 @@
         <% } %>
 
         <form action="/auth/register" method="POST">
+            <!-- CSRF-токен -->
+            <input type="hidden" name="_csrf" value="<%= _csrf %>">
+
             <label for="email">Email:</label>
             <input type="email" id="email" name="email" required>
 
@@ -32,9 +36,10 @@
                 <option value="admin">Admin</option>
             </select>
 
-            <button type="submit" class ="button">Register</button>
+            <button type="submit" class="button">Register</button>
         </form>
-        <p>Already have an account? <a href="/" class ="button">Login</a></p>
+        
+        <p>Already have an account? <a href="/" class="button-link">Login</a></p>
     </div>
 </body>
 </html>

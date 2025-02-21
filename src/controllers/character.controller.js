@@ -37,7 +37,8 @@ module.exports = {
         return res.status(404).json({ error: 'Character not found' });
       }
 
-      res.status(200).json({ message: 'Character deleted successfully' });
+      req.flash('success', 'Character deleted successfully');
+      res.redirect('/characters/view');
     } catch (err) {
       next(err);
     }
@@ -141,6 +142,9 @@ module.exports = {
   //  Получение списка только своих персонажей
   getCharacters: async (req, res, next) => {
     try {
+      if (!req.user || !req.user.id) {
+        return res.status(401).json({ error: 'Unauthorized: User not found' });
+      }
       const characters = await Character.find({ userId: req.user.id });
       res.status(200).json(characters);
     } catch (err) {

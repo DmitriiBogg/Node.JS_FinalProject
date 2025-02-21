@@ -33,7 +33,7 @@ router.put(
 );
 
 // Получение списка всех персонажей
-router.get('/', characterController.getCharacters);
+router.get('/', authenticate, characterController.getCharacters);
 
 // Получение рейтинга персонажей
 router.get('/leaderboard', characterController.getLeaderboard);

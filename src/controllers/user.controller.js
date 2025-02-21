@@ -193,7 +193,18 @@ const renderUserLeaderboard = async (req, res, next) => {
     next(err);
   }
 };
-
+const deleteUser = async (req, res, next) => {
+  try {
+    const user = await User.findByIdAndDelete(req.params.id);
+    if (!user) {
+      return res.status(404).json({ error: 'User not found' });
+    }
+    await Character.deleteMany({ userId: req.params.id }); // Удалить всех персонажей пользователя (совпаения по ID)
+    res.json({ message: 'User deleted successfully' });
+  } catch (error) {
+    next(error);
+  }
+};
 // Экспорт всех функций
 module.exports = {
   registerUser,
@@ -202,4 +213,5 @@ module.exports = {
   renderRegister,
   renderLogin,
   renderUserLeaderboard,
+  deleteUser,
 };

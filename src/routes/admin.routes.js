@@ -7,6 +7,7 @@ const {
   authenticate,
   authorizeRole,
 } = require('../middlewares/auth.middleware');
+const userController = require('../controllers/user.controller');
 
 // Рендеринг страницы админа с пользователями и flash-сообщениями
 router.get(
@@ -167,5 +168,15 @@ router.post(
     }
   },
 );
-
+// Удаление пользователя администратором
+router.delete(
+  '/users/:id',
+  authenticate,
+  authorizeRole('admin'),
+  (req, res, next) => {
+    console.log('DELETE /admin/users/:id called with ID:', req.params.id);
+    next();
+  },
+  userController.deleteUser,
+);
 module.exports = router;

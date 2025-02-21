@@ -4,32 +4,48 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Admin Dashboard</title>
-    <link rel="stylesheet" href="/styles.css">
+    <link rel="stylesheet" href="/styles/main.css">
+    <link rel="stylesheet" href="/styles/admin.css">
+    <link rel="stylesheet" href="/styles/forms.css">   
 </head>
 <body>
     <div class="container">
-
-        
         <h2>Admin Dashboard</h2>
+
         <!-- Кнопка для перехода на Leaderboard -->
-        <a href="/leaderboard/view" class="button">🏆 Leaderboard</a>
+        <a href="/leaderboard/view" class="leaderboard-button">🏆 Leaderboard</a>
 
         <!-- Список пользователей -->
         <h3>Users</h3>
-        <ul>
-            <% users.forEach(user => { %>
-                <li>
-                    <%= user.email %> (Role: <%= user.role %>)
-                    <form action="/admin/users/<%= user._id %>?_method=DELETE" method="POST" style="display:inline;">
-                        <button type="submit" class ="button">Delete</button>
-                    </form>
-                </li>
-            <% }); %>
-        </ul>
+        <table class="admin-table">
+            <thead>
+                <tr>
+                    <th>Email</th>
+                    <th>Role</th>
+                    <th>Actions</th>
+                </tr>
+            </thead>
+            <tbody>
+                <% users.forEach(user => { %>
+                    <tr>
+                        <td><%= user.email %></td>
+                        <td><%= user.role %></td>
+                        <td>
+                            <form action="/admin/users/<%= user._id %>?_method=DELETE" method="POST">
+                                <input type="hidden" name="_csrf" value="<%= _csrf %>">
+                                <button type="submit" class="button delete-button">Delete</button>
+                            </form>
+                        </td>                        
+                    </tr>
+                <% }); %>
+            </tbody>
+        </table>
 
         <!-- Форма для создания нового задания -->
         <h3>Create New Quest</h3>
-        <form action="/api/quests" method="POST">
+        <form action="/api/quests" method="POST" class="form-grid">
+            <input type="hidden" name="_csrf" value="<%= _csrf %>">
+
             <label for="title">Title:</label>
             <input type="text" id="title" name="title" required>
 
@@ -49,12 +65,14 @@
             <label for="experience">Experience Reward:</label>
             <input type="number" id="experience" name="reward[experience]" min="0" required>
 
-            <button type="submit" class ="button">Create Quest</button>
+            <button type="submit" class="button">Create Quest</button>
         </form>
 
         <!-- Форма для создания новой ачивки -->
         <h3>Create New Achievement</h3>
-        <form action="/api/achievements" method="POST">
+        <form action="/api/achievements" method="POST" class="form-grid">
+            <input type="hidden" name="_csrf" value="<%= _csrf %>">
+
             <label for="ach_title">Title:</label>
             <input type="text" id="ach_title" name="title" required>
 
@@ -77,10 +95,10 @@
             <label for="ach_experience">Experience Reward:</label>
             <input type="number" id="ach_experience" name="reward[experience]" min="0" required>
 
-            <button type="submit" class ="button">Create Achievement</button>
+            <button type="submit" class="button">Create Achievement</button>
         </form>
 
-        <a href="/logout" class ="button">Logout</a>
+        <a href="/logout" class="button">Logout</a>
     </div>
 </body>
 </html>

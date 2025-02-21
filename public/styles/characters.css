@@ -1,0 +1,94 @@
+/* === Стилизация списка персонажей === */
+.character-list {
+  list-style: none;
+  padding: 0;
+  margin: 0;
+}
+
+.character-item {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 15px;
+  margin-bottom: 10px;
+  padding: 10px;
+  border: 1px solid #b8860b;
+  border-radius: 8px;
+  background: rgba(38, 25, 11, 0.9);
+  max-width: 600px;
+  margin-left: auto;
+  margin-right: auto;
+}
+
+.character-avatar {
+  width: 64px;
+  height: 64px;
+  border-radius: 50%;
+  background-size: cover;
+  background-position: center;
+  border: 2px solid #fff;
+  flex-shrink: 0;
+}
+
+/* Фоновые изображения для классов персонажей */
+.warrior {
+  background-image: url('/images/Warrior.webp');
+}
+
+.mage {
+  background-image: url('/images/Mage.webp');
+}
+
+.ranger {
+  background-image: url('/images/ranger.webp');
+}
+
+/* Контейнер для квестов */
+.quest-container {
+  display: flex;
+  flex-wrap: wrap;
+  justify-content: center;
+  gap: 15px;
+  margin-top: 20px;
+}
+
+/* Карточка квеста */
+.quest-card {
+  background: rgba(51, 26, 12, 0.9);
+  border: 2px solid #d4af37;
+  padding: 15px;
+  width: 250px;
+  text-align: center;
+  box-shadow: 2px 2px 10px rgba(0, 0, 0, 0.5);
+  color: white;
+}
+
+/* Заголовок квеста */
+.quest-card h3 {
+  margin: 0;
+  font-size: 20px;
+  color: #d4af37;
+}
+
+/* Кнопка "Take Quest" */
+.quest-button {
+  margin-top: 10px;
+  padding: 8px 15px;
+  font-size: 16px;
+  font-weight: bold;
+  background: #d4af37;
+  color: #442200;
+  border: 2px solid #c9a12d;
+  border-radius: 5px;
+  cursor: pointer;
+  transition: all 0.3s ease;
+}
+
+.quest-button:hover {
+  background: #c9a12d;
+  color: white;
+}
+
+.logout-button {
+  margin-top: 20px;
+}
