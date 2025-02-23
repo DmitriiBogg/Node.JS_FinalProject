@@ -41,61 +41,6 @@ module.exports = {
     }
   },
 
-  //  Обновление данных персонажа
-  updateCharacter: async (req, res, next) => {
-    try {
-      const { name, class: characterClass } = req.body;
-      const character = await Character.findOneAndUpdate(
-        { _id: req.params.id, userId: req.user.id },
-        { name, class: characterClass },
-        { new: true, runValidators: true },
-      );
-      if (!character) {
-        return res.status(404).json({ error: 'Character not found' });
-      }
-      res.status(200).json(character);
-    } catch (err) {
-      next(err);
-    }
-  },
-
-  //  Повышение уровня персонажа
-  levelUpCharacter: async (req, res, next) => {
-    try {
-      const character = await Character.findOne({
-        _id: req.params.id,
-        userId: req.user.id,
-      });
-      if (!character) {
-        return res.status(404).json({ error: 'Character not found' });
-      }
-      character.level += 1;
-      await character.save();
-      res.status(200).json(character);
-    } catch (err) {
-      next(err);
-    }
-  },
-
-  //  Добавление опыта персонажу
-  addExperience: async (req, res, next) => {
-    try {
-      const { experience } = req.body;
-      const character = await Character.findOne({
-        _id: req.params.id,
-        userId: req.user.id,
-      });
-      if (!character) {
-        return res.status(404).json({ error: 'Character not found' });
-      }
-      character.experience += experience;
-      await character.save();
-      res.status(200).json(character);
-    } catch (err) {
-      next(err);
-    }
-  },
-
   //  Взять квест персонажем
   takeQuest: async (req, res, next) => {
     try {
@@ -145,8 +90,8 @@ module.exports = {
         return res.status(404).json({ message: 'Quest not found' });
       }
       // Выдача награды
-      character.experience += quest.reward.experience;
       character.gold += quest.reward.gold;
+      await character.gainExperience(quest.reward.experience);
       character.quests = character.quests.filter(
         (q) => q.toString() !== questId,
       );

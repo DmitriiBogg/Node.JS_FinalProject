@@ -120,8 +120,8 @@
                         <td><%= achievement.title %></td>
                         <td><%= achievement.criteria %></td>
                         <td><%= achievement.threshold %></td>
-                        <td><%= achievement.reward && achievement.reward.gold ? achievement.reward.gold : 0 %></td>
-                        <td><%= achievement.reward && achievement.reward.experience ? achievement.reward.experience : 0 %></td>
+                        <td><%= achievement.reward.gold %></td>
+                        <td><%= achievement.reward.experience %></td>
                         <td>
                             <form action="/api/achievements/<%= achievement._id %>?_method=DELETE" method="POST">
                                 <input type="hidden" name="_csrf" value="<%= _csrf %>">
@@ -134,7 +134,7 @@
         </table>
 
         <h3>Create New Achievement</h3>
-        <form action="/api/achievements" method="POST" class="form-grid">
+        <form action="/admin/achievements" method="POST" class="form-grid">
             <input type="hidden" name="_csrf" value="<%= _csrf %>">
 
             <label for="ach_title">Title:</label>
@@ -160,7 +160,7 @@
             <input type="number" id="ach_experience" name="reward[experience]" min="0" required>
 
             <button type="submit" class="button">Create Achievement</button>
-        </form>
+        </ffor>
 
         <a href="/logout" class="button">Logout</a>
     </div>

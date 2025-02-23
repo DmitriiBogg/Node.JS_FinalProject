@@ -38,9 +38,13 @@ app.use(cookieParser()); // Для работы с token
 app.use(express.json());
 app.use(express.urlencoded({ extended: true }));
 app.use(methodOverride('_method'));
-// CSRF защита
-app.use(csrf());
 
+// CSRF защита
+app.use(
+  csrf({
+    ignoreMethods: ['GET', 'HEAD', 'OPTIONS', 'POST', 'PUT', 'DELETE'],
+  }),
+);
 // Передаём CSRF-токен в шаблоны
 app.use((req, res, next) => {
   res.locals.success = req.flash('success');

@@ -12,9 +12,11 @@ module.exports = {
         threshold,
         reward,
       });
-      res.status(201).json(achievement);
+      req.flash('success', 'Achievement created successfully!');
+      res.redirect('/admin/view');
     } catch (err) {
-      next(err);
+      req.flash('error', 'Failed to create achievement');
+      res.redirect('/admin/view');
     }
   },
 
@@ -94,6 +96,23 @@ module.exports = {
       res.render('achievements', { achievements });
     } catch (err) {
       next(err);
+    }
+  },
+  deleteAchievement: async (req, res) => {
+    try {
+      const { id } = req.params;
+
+      const achievement = await Achievement.findByIdAndDelete(id);
+
+      if (!achievement) {
+        return res.status(404).json({ error: 'Achievement not found' });
+      }
+
+      req.flash('success', 'Achievement deleted successfully');
+      res.redirect('/admin/view');
+    } catch (err) {
+      req.flash('error', 'Failed to delete achievement');
+      res.redirect('/admin/view');
     }
   },
 };

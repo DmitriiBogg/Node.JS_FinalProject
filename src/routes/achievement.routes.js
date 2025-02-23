@@ -24,7 +24,12 @@ router.put(
   achievementController.assignAchievement,
 );
 
-// Отображение страницы с достижениями
-router.get('/view', achievementController.renderAchievements);
+// удаление достижений
+router.delete(
+  '/:id',
+  authenticate,
+  authorizeRole('admin'),
+  achievementController.deleteAchievement,
+);
 
 module.exports = router;

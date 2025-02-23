@@ -57,10 +57,19 @@ const characterSchema = new mongoose.Schema(
 
 // Метод для повышения уровня персонажа
 characterSchema.methods.levelUp = function () {
+  let leveledUp = false;
   while (this.experience >= 1000 && this.level < 100) {
     this.level += 1;
     this.experience -= 1000;
+    leveledUp = true;
   }
+};
+
+// Метод для добавления опыта и автоматического повышения уровня
+characterSchema.methods.gainExperience = async function (xp) {
+  this.experience += xp;
+  this.levelUp();
+  await this.save();
 };
 
 // Метод для обновления рейтинга персонажа

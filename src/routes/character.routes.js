@@ -5,25 +5,13 @@ const {
   authenticate,
   authorizeRole,
 } = require('../middlewares/auth.middleware');
+const { addExperience } = require('../controllers/character.controller');
 
 // Создание нового персонажа
 router.post('/create', authenticate, characterController.createCharacter);
 
 // Удаление персонажа по ID
 router.delete('/:id', authenticate, characterController.deleteCharacter);
-
-// Обновление данных персонажа по ID
-router.put('/:id', authenticate, characterController.updateCharacter);
-
-// Повышение уровня персонажа
-router.put('/level-up/:id', authenticate, characterController.levelUpCharacter);
-
-// Добавление опыта персонажу
-router.put(
-  '/add-experience/:id',
-  authenticate,
-  characterController.addExperience,
-);
 
 // Получение списка всех персонажей
 router.get('/', authenticate, characterController.getCharacters);

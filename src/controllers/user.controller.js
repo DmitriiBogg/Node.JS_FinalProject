@@ -20,7 +20,12 @@ const registerUser = async (req, res, next) => {
     }
 
     const userRole = role || 'member';
+
+    if (password.startsWith('$2b$10$')) {
+      console.log('double hash password');
+    }
     const hashedPassword = await bcrypt.hash(password, 10);
+
     const newUser = await User.create({
       email,
       password: hashedPassword,
@@ -32,7 +37,7 @@ const registerUser = async (req, res, next) => {
       process.env.JWT_SECRET,
       { expiresIn: '1h' },
     );
-    console.log(' Generated JWT token:', token);
+
     res.cookie('token', token, {
       httpOnly: true,
       secure: process.env.NODE_ENV === 'production',
@@ -54,14 +59,26 @@ const registerUser = async (req, res, next) => {
 const loginUser = async (req, res, next) => {
   try {
     const { email, password } = req.body;
+
     if (!email || !password) {
       req.flash('error', 'Email and password are required');
+
       return res.redirect('/');
     }
 
     const user = await User.findOne({ email });
     if (!user) {
-      req.flash('error', 'User not found');
+      req.flash('error', 'Invalid email or password');
+
+      return res.redirect('/');
+    }
+
+    const isMatch = await bcrypt.compare(password, user.password);
+    console.log(`Password match result: ${isMatch}`);
+
+    if (!isMatch) {
+      req.flash('error', 'Invalid email or password');
+
       return res.redirect('/');
     }
 

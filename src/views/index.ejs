@@ -12,9 +12,10 @@
         <h2>Login</h2>
 
         <!-- Вывод ошибки, если есть -->
-        <% if (error) { %>
+        <% if (typeof error !== "undefined" && error) { %>
             <p style="color: red;"><%= error %></p>
-        <% } %>
+          <% } %>
+          
 
         <form action="/auth/login" method="POST">
             <!-- CSRF-токен -->
