@@ -5,14 +5,7 @@ const {
   authenticate,
   authorizeRole,
 } = require('../middlewares/auth.middleware');
-
-// Создание нового задания (доступно только администратору)
-router.post(
-  '/',
-  authenticate,
-  authorizeRole('admin'),
-  questController.createQuest,
-);
+const characterController = require('../controllers/character.controller');
 
 // Получение списка всех заданий
 router.get('/', questController.getAllQuests);
@@ -27,9 +20,13 @@ router.put(
   authorizeRole('admin'),
   questController.updateQuestStatus,
 );
-
-// Назначение задания персонажу
-router.put('/assign', authenticate, questController.assignQuestToCharacter);
+// удаление задания
+router.delete(
+  '/:id',
+  authenticate,
+  authorizeRole('admin'),
+  questController.deleteQuest,
+);
 
 // Добавление отзыва к заданию
 router.post('/:questId/review', authenticate, questController.addReview);

@@ -9,17 +9,21 @@ const {
 } = require('../middlewares/auth.middleware');
 const userController = require('../controllers/user.controller');
 
-// Рендеринг страницы админа с пользователями и flash-сообщениями
+// Рендеринг страницы админа с пользователями, квестами и ачивками
 router.get(
   '/view',
   authenticate,
   authorizeRole('admin'),
   async (req, res, next) => {
     try {
-      const users = await User.find(); // Загружаем всех пользователей
-      console.log('Flash messages:', req.flash('success'), req.flash('error'));
+      const users = await User.find();
+      const quests = await Quest.find();
+      const achievements = await Achievement.find();
+
       res.render('admin', {
         users,
+        quests,
+        achievements,
         success: req.flash('success') || [],
         error: req.flash('error') || [],
       });
@@ -111,19 +115,25 @@ router.post(
         return res.redirect('/admin/view');
       }
 
-      if (title.length < 3 || description.length < 10) {
+      if (title.length < 3 || description.length < 6) {
         req.flash(
           'error',
           'Title must be at least 3 characters and description at least 10.',
         );
         return res.redirect('/admin/view');
       }
-
+      // Преобразуем строки в числа
+      const formattedReward = {
+        gold: Number(reward.gold) || 0,
+        experience: Number(reward.experience) || 0,
+      };
       await Quest.create({ title, description, difficulty, reward });
 
       req.flash('success', 'Quest created successfully!');
       res.redirect('/admin/view');
     } catch (err) {
+      console.log(err);
+
       req.flash('error', 'Error creating quest.');
       res.redirect('/admin/view');
     }

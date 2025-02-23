@@ -25,13 +25,6 @@ router.put(
   characterController.addExperience,
 );
 
-// Завершение задания персонажем
-router.put(
-  '/complete-quest/:questId',
-  authenticate,
-  characterController.completeQuest,
-);
-
 // Получение списка всех персонажей
 router.get('/', authenticate, characterController.getCharacters);
 
@@ -43,5 +36,19 @@ router.get('/view', authenticate, characterController.renderCharacters);
 
 // Отображение страницы с рейтингом персонажей
 router.get('/leaderboard/view', characterController.renderLeaderboard);
+
+// Взять квест
+router.post(
+  '/:id/quests/:questId',
+  authenticate,
+  characterController.takeQuest,
+);
+
+// Завершить квест
+router.post(
+  '/:id/quests/:questId/complete',
+  authenticate,
+  characterController.completeQuest,
+);
 
 module.exports = router;

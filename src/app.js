@@ -53,12 +53,12 @@ app.use((req, res, next) => {
 //  Подключение маршрутов
 app.use('/', indexRoutes);
 app.use('/auth', authRoutes);
+app.use('/admin', adminRoutes);
 app.use('/', userRoutes);
 app.use('/api/users', userRoutes);
 app.use('/api/characters', characterRoutes);
 app.use('/api/quests', questRoutes);
 app.use('/api/achievements', achievementRoutes);
-app.use('/admin', adminRoutes);
 app.use('/characters', characterRoutes);
 
 //  Статические файлы (CSS)

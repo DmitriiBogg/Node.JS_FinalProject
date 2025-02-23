@@ -40,6 +40,12 @@ const characterSchema = new mongoose.Schema(
         ref: 'Achievement',
       },
     ],
+    quests: [
+      {
+        type: mongoose.Schema.Types.ObjectId,
+        ref: 'Quest',
+      },
+    ],
     rating: {
       type: Number,
       default: 0,

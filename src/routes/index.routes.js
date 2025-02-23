@@ -23,19 +23,4 @@ router.get('/register', (req, res) => {
 // Переход на страницу с персонажами
 router.get('/view', authenticate, characterController.renderCharacters);
 
-// Переход на страницу администратора
-router.get(
-  '/admin/view',
-  authenticate,
-  authorizeRole('admin'),
-  async (req, res, next) => {
-    try {
-      const users = await User.find(); // Загружаем пользователей
-      res.render('admin', { users }); // Рендерим admin.ejs
-    } catch (err) {
-      next(err);
-    }
-  },
-);
-
 module.exports = router;

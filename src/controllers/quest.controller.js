@@ -2,35 +2,6 @@ const Quest = require('../models/quest.model');
 const Character = require('../models/character.model');
 
 module.exports = {
-  //  Создание нового задания
-  createQuest: async (req, res, next) => {
-    try {
-      const { title, description, difficulty, reward } = req.body;
-
-      if (!title || title.length < 3) {
-        req.flash('error', 'Title must be at least 3 characters long');
-        return res.redirect('/admin/view');
-      }
-      if (!description || description.length < 10) {
-        req.flash('error', 'Description must be at least 10 characters long');
-        return res.redirect('/admin/view');
-      }
-
-      const newQuest = await Quest.create({
-        title,
-        description,
-        difficulty,
-        reward,
-      });
-
-      req.flash('success', 'Quest created successfully');
-      res.redirect('/admin/view');
-    } catch (err) {
-      req.flash('error', 'Failed to create quest');
-      res.redirect('/admin/view');
-    }
-  },
-
   //  Получение списка всех заданий
   getAllQuests: async (req, res, next) => {
     try {
@@ -73,64 +44,39 @@ module.exports = {
   takeQuest: async (req, res, next) => {
     try {
       const { id } = req.params; // ID квеста из URL
-      const userId = req.user.id; // ID текущего пользователя
+      const { characterId } = req.body; // ID выбранного персонажа
 
-      // Найти квест
+      if (!characterId) {
+        req.flash('error', 'Please select a character.');
+        return res.redirect('/characters/view');
+      }
+
       const quest = await Quest.findById(id);
       if (!quest) {
         req.flash('error', 'Quest not found.');
-        return res.redirect('/quests/view');
+        return res.redirect('/characters/view');
       }
 
-      // Найти персонажа пользователя
-      const character = await Character.findOne({ userId });
+      const character = await Character.findOne({
+        _id: characterId,
+        userId: req.user.id,
+      });
       if (!character) {
         req.flash('error', 'Character not found.');
-        return res.redirect('/quests/view');
+        return res.redirect('/characters/view');
       }
 
-      // Проверяем, не взят ли уже этот квест
-      if (character.activeQuests.includes(id)) {
-        req.flash('error', 'You have already taken this quest.');
-        return res.redirect('/quests/view');
+      // Проверяем, выполняет ли персонаж этот квест прямо сейчас
+      if (character.quests.includes(id) && quest.status !== 'completed') {
+        req.flash('error', 'You are already doing this quest.');
+        return res.redirect('/characters/view');
       }
 
-      // Добавляем квест в список активных
-      character.activeQuests.push(id);
+      character.quests.push(id);
       await character.save();
 
       req.flash('success', 'Quest successfully taken!');
-      res.redirect('/quests/view');
-    } catch (err) {
-      next(err);
-    }
-  },
-  // Назначение задания персонажу
-  assignQuestToCharacter: async (req, res, next) => {
-    try {
-      const { questId, characterId } = req.body;
-      if (!questId || !characterId) {
-        return res
-          .status(400)
-          .json({ error: 'Quest ID and Character ID are required' });
-      }
-
-      const quest = await Quest.findById(questId);
-      const character = await Character.findById(characterId);
-
-      if (!quest) return res.status(404).json({ error: 'Quest not found' });
-      if (!character)
-        return res.status(404).json({ error: 'Character not found' });
-
-      if (quest.assignedTo) {
-        return res.status(400).json({ error: 'Quest already assigned' });
-      }
-
-      quest.assignedTo = characterId;
-      quest.status = 'in-progress';
-      await quest.save();
-
-      res.status(200).json({ message: 'Quest assigned successfully', quest });
+      res.redirect('/characters/view');
     } catch (err) {
       next(err);
     }
@@ -173,6 +119,23 @@ module.exports = {
       res.render('quests', { quests });
     } catch (err) {
       next(err);
+    }
+  },
+  deleteQuest: async (req, res) => {
+    try {
+      const { id } = req.params;
+
+      const quest = await Quest.findByIdAndDelete(id);
+
+      if (!quest) {
+        return res.status(404).json({ error: 'Quest not found' });
+      }
+
+      req.flash('success', 'Quest deleted successfully');
+      res.redirect('/admin/view');
+    } catch (err) {
+      req.flash('error', 'Failed to delete quest');
+      res.redirect('/admin/view');
     }
   },
 };

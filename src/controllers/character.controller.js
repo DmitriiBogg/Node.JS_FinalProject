@@ -18,7 +18,6 @@ module.exports = {
         class: characterClass,
         userId,
       });
-
       res.redirect('/characters/view');
     } catch (err) {
       next(err);
@@ -32,11 +31,9 @@ module.exports = {
         _id: req.params.id,
         userId: req.user.id,
       });
-
       if (!character) {
         return res.status(404).json({ error: 'Character not found' });
       }
-
       req.flash('success', 'Character deleted successfully');
       res.redirect('/characters/view');
     } catch (err) {
@@ -44,21 +41,18 @@ module.exports = {
     }
   },
 
-  //  Обновление данных персонажа (только своих)
+  //  Обновление данных персонажа
   updateCharacter: async (req, res, next) => {
     try {
       const { name, class: characterClass } = req.body;
-
       const character = await Character.findOneAndUpdate(
         { _id: req.params.id, userId: req.user.id },
         { name, class: characterClass },
         { new: true, runValidators: true },
       );
-
       if (!character) {
         return res.status(404).json({ error: 'Character not found' });
       }
-
       res.status(200).json(character);
     } catch (err) {
       next(err);
@@ -75,10 +69,8 @@ module.exports = {
       if (!character) {
         return res.status(404).json({ error: 'Character not found' });
       }
-
-      character.levelUp();
+      character.level += 1;
       await character.save();
-
       res.status(200).json(character);
     } catch (err) {
       next(err);
@@ -93,47 +85,73 @@ module.exports = {
         _id: req.params.id,
         userId: req.user.id,
       });
-
       if (!character) {
         return res.status(404).json({ error: 'Character not found' });
       }
-
       character.experience += experience;
       await character.save();
-
-      await achievementController.checkAndAssignAchievements(character);
       res.status(200).json(character);
     } catch (err) {
       next(err);
     }
   },
 
-  //  Завершение задания персонажем
-  completeQuest: async (req, res, next) => {
+  //  Взять квест персонажем
+  takeQuest: async (req, res, next) => {
     try {
-      const quest = await Quest.findById(req.params.questId);
+      const { id, questId } = req.params;
       const character = await Character.findOne({
-        _id: req.body.characterId,
+        _id: id,
         userId: req.user.id,
       });
+      if (!character) {
+        return res
+          .status(403)
+          .json({ message: 'Character not found or does not belong to user' });
+      }
+      if (character.quests.includes(questId)) {
+        return res.status(400).json({ message: 'Quest already taken' });
+      }
+      console.log('Before adding quest:', character.quests);
+      character.quests = [...character.quests, quest._id];
+      await character.save();
+      console.log('After adding quest:', character.quests);
+      res.json({ message: 'Quest successfully taken!', character });
+    } catch (err) {
+      next(err);
+    }
+  },
 
-      if (!quest) return res.status(404).json({ error: 'Quest not found' });
-      if (!character)
-        return res.status(404).json({ error: 'Character not found' });
-
+  //  Завершить квест
+  completeQuest: async (req, res, next) => {
+    try {
+      const { id, questId } = req.params;
+      const character = await Character.findOne({
+        _id: id,
+        userId: req.user.id,
+      });
+      if (!character) {
+        return res
+          .status(403)
+          .json({ message: 'Character not found or does not belong to user' });
+      }
+      if (!character.quests.includes(questId)) {
+        return res
+          .status(400)
+          .json({ message: 'Quest not found in character quests' });
+      }
+      const quest = await Quest.findById(questId);
+      if (!quest) {
+        return res.status(404).json({ message: 'Quest not found' });
+      }
+      // Выдача награды
       character.experience += quest.reward.experience;
       character.gold += quest.reward.gold;
-      character.updateRating();
-
+      character.quests = character.quests.filter(
+        (q) => q.toString() !== questId,
+      );
       await character.save();
-
-      quest.status = 'completed';
-      await quest.save();
-
-      await achievementController.checkAndAssignAchievements(character);
-      res
-        .status(200)
-        .json({ message: 'Quest completed successfully', character });
+      res.json({ message: 'Quest completed successfully', character });
     } catch (err) {
       next(err);
     }
@@ -168,18 +186,13 @@ module.exports = {
   renderCharacters: async (req, res, next) => {
     try {
       console.log(
-        ' Rendering characters.ejs for user:',
+        'Rendering characters.ejs for user:',
         req.user ? req.user.id : 'No user!',
       );
-      // Загружаем всех персонажей текущего пользователя
-      const characters = await Character.find({ userId: req.user.id }).populate(
-        'achievements',
-      );
-
-      // Загружаем все доступные задания
+      const characters = await Character.find({ userId: req.user.id })
+        .populate('quests')
+        .populate('achievements');
       const quests = await Quest.find({});
-
-      // Рендерим страницу с персонажами и заданиями
       res.render('characters', { characters, quests });
     } catch (err) {
       next(err);

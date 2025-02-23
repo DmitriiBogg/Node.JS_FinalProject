@@ -12,10 +12,8 @@
     <div class="container">
         <h2>Admin Dashboard</h2>
 
-        <!-- Кнопка для перехода на Leaderboard -->
         <a href="/leaderboard/view" class="leaderboard-button">🏆 Leaderboard</a>
 
-        <!-- Список пользователей -->
         <h3>Users</h3>
         <table class="admin-table">
             <thead>
@@ -41,34 +39,100 @@
             </tbody>
         </table>
 
-        <!-- Форма для создания нового задания -->
-        <h3>Create New Quest</h3>
-        <form action="/api/quests" method="POST" class="form-grid">
-            <input type="hidden" name="_csrf" value="<%= _csrf %>">
+        <h3>Quests</h3>
+        <table class="admin-table">
+            <thead>
+                <tr>
+                    <th>Title</th>
+                    <th>Description</th>
+                    <th>Difficulty</th>
+                    <th>Gold Reward</th>
+                    <th>Experience Reward</th>
+                    <th>Actions</th>
+                </tr>
+            </thead>
+            <tbody>
+                <% if (quests && quests.length > 0) { %>
+                    <% quests.forEach(quest => { %>
+                        <tr>
+                            <td><%= quest.title %></td>
+                            <td><%= quest.description %></td>
+                            <td><%= quest.difficulty %></td>
+                            <td><%= quest.reward.gold %></td>
+                            <td><%= quest.reward.experience %></td>
+                            <td>
+                                <form action="/api/quests/<%= quest._id %>?_method=DELETE" method="POST">
+                                    <input type="hidden" name="_csrf" value="<%= _csrf %>">
+                                    <button type="submit" class="button delete-button">Delete</button>
+                                </form>
+                            </td>
+                        </tr>
+                    <% }); %>
+                <% } else { %>
+                    <tr>
+                        <td colspan="5">No quests available.</td>
+                    </tr>
+                <% } %>
+            </tbody>
+        </table>
 
+        <h3>Create New Quest</h3>
+        <form action="/admin/quests" method="POST" class="form-grid">
+            <input type="hidden" name="_csrf" value="<%= _csrf %>">
+            
             <label for="title">Title:</label>
             <input type="text" id="title" name="title" required>
-
+            
             <label for="description">Description:</label>
             <textarea id="description" name="description" required></textarea>
-
+            
             <label for="difficulty">Difficulty:</label>
             <select id="difficulty" name="difficulty">
                 <option value="easy">Easy</option>
                 <option value="medium">Medium</option>
                 <option value="hard">Hard</option>
             </select>
-
+            
             <label for="gold">Gold Reward:</label>
             <input type="number" id="gold" name="reward[gold]" min="0" required>
-
+            
             <label for="experience">Experience Reward:</label>
             <input type="number" id="experience" name="reward[experience]" min="0" required>
-
+            
             <button type="submit" class="button">Create Quest</button>
         </form>
 
-        <!-- Форма для создания новой ачивки -->
+        <h3>Achievements</h3>
+        <table class="admin-table">
+            <thead>
+                <tr>
+                    <th>Title</th>
+                    <th>Criteria</th>
+                    <th>Threshold</th>
+                    <th>Gold Reward</th>
+                    <th>Experience Reward</th>
+                    <th>Actions</th>
+                </tr>
+            </thead>
+            <tbody>
+                <% achievements.forEach(achievement => { %>
+                    <tr>
+                        <td><%= achievement.title %></td>
+                        <td><%= achievement.criteria %></td>
+                        <td><%= achievement.threshold %></td>
+                        <td><%= achievement.reward && achievement.reward.gold ? achievement.reward.gold : 0 %></td>
+                        <td><%= achievement.reward && achievement.reward.experience ? achievement.reward.experience : 0 %></td>
+                        <td>
+                            <form action="/api/achievements/<%= achievement._id %>?_method=DELETE" method="POST">
+                                <input type="hidden" name="_csrf" value="<%= _csrf %>">
+                                <button type="submit" class="button delete-button">Delete</button>
+                            </form>
+                        </td>
+                    </tr>
+                <% }); %>
+            </tbody>
+        </table>
+
         <h3>Create New Achievement</h3>
         <form action="/api/achievements" method="POST" class="form-grid">
             <input type="hidden" name="_csrf" value="<%= _csrf %>">
