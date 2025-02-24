@@ -95,6 +95,11 @@ module.exports = {
       character.quests = character.quests.filter(
         (q) => q.toString() !== questId,
       );
+      // Увеличение счетчика завершенных квестов
+      character.completedQuests = (character.completedQuests || 0) + 1;
+      // Проверка ачивок
+      await achievementController.checkAndAssignAchievements(character);
+
       await character.save();
       res.json({ message: 'Quest completed successfully', character });
     } catch (err) {

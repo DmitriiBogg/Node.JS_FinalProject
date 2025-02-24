@@ -22,10 +22,10 @@ module.exports = {
 
   getAllAchievements: async (req, res, next) => {
     try {
-      const achievements = await Achievement.find(); // Получение всех достижений из базы данных
-      res.status(200).json(achievements); // Отправка достижений в формате JSON
+      const achievements = await Achievement.find();
+      res.status(200).json(achievements);
     } catch (err) {
-      next(err); // Передача ошибки в middleware для обработки
+      next(err);
     }
   },
 

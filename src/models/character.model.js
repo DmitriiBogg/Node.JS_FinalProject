@@ -5,13 +5,13 @@ const characterSchema = new mongoose.Schema(
     name: {
       type: String,
       required: [true, 'Character name is required'],
-      minlength: [3, 'Name must be at least 3 characters long'], // Минимальная длина имени
+      minlength: [3, 'Name must be at least 3 characters long'],
       trim: true,
     },
     class: {
       type: String,
       required: [true, 'Character class is required'],
-      enum: ['Warrior', 'Mage', 'Ranger'], // Ограничение на выбор класса
+      enum: ['Warrior', 'Mage', 'Ranger'],
     },
     level: {
       type: Number,
@@ -50,6 +50,11 @@ const characterSchema = new mongoose.Schema(
       type: Number,
       default: 0,
       min: [0, 'Rating cannot be negative'],
+    },
+    completedQuests: {
+      type: Number,
+      default: 0,
+      min: 0,
     },
   },
   { timestamps: true },
