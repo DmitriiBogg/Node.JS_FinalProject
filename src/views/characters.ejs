@@ -32,11 +32,12 @@
                         <strong><%= character.name %></strong> (Level: <%= character.level %>)
                         <p>Gold: <%= character.gold %> | Exp: <%= character.experience %></p>
                     </div>
+                    <!-- Форма для редактирования персонажа -->
 
                     <!-- Форма для удаления персонажа -->
                     <form action="/characters/<%= character._id %>?_method=DELETE" method="POST">
                         <input type="hidden" name="_csrf" value="<%= _csrf %>">
-                        <button type="submit" class="button delete-button">Delete</button>
+                        <button type="submit" class="button delete-button">🗑️</button>
                     </form>
                 
                     <!-- Активные квесты персонажа -->
@@ -55,11 +56,14 @@
 
                     <!-- Достижения персонажа -->
                     <h4>Achievements</h4>
-                    <ul>
+                    <div class="achievements-container">
                         <% character.achievements.forEach(ach => { %>
-                            <li><%= ach.name %>: <%= ach.description %></li>
+                            <div class="achievement-card">
+                                <strong><%= ach.name %></strong>
+                                <p><%= ach.description %></p>
+                            </div>
                         <% }); %>
-                    </ul>
+                    </div>
                 </li>
             <% }); %>
         </ul>

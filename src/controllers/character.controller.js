@@ -24,6 +24,29 @@ module.exports = {
     }
   },
 
+  //  Обновление имени персонажа
+  updateCharacterName: async (req, res, next) => {
+    try {
+      const { id } = req.params;
+      const { name } = req.body;
+      if (!name) {
+        return res.status(400).json({ error: 'Name is required' });
+      }
+      const character = await Character.findOneAndUpdate(
+        { _id: id, userId: req.user.id },
+        { name },
+        { new: true },
+      );
+      if (!character) {
+        return res.status(404).json({ error: 'Character not found' });
+      }
+      req.flash('success', 'Character name updated successfully');
+      res.redirect('/characters/view');
+    } catch (err) {
+      next(err);
+    }
+  },
+
   //  Удаление персонажа (только своих)
   deleteCharacter: async (req, res, next) => {
     try {

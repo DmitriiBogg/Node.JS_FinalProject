@@ -12,6 +12,8 @@ router.post('/create', authenticate, characterController.createCharacter);
 
 // Удаление персонажа по ID
 router.delete('/:id', authenticate, characterController.deleteCharacter);
+// Обновление имени персонажа
+router.put('/:id', authenticate, characterController.updateCharacterName);
 
 // Получение списка всех персонажей
 router.get('/', authenticate, characterController.getCharacters);
