@@ -1,29 +1,31 @@
-Adventurers' Guild
-Description
-"Adventurers' Guild" is a web application where users can join a guild, create characters, take on quests, and level up, while the administrator manages quests and oversees the guild.
+Project: Adventurers' Guild
+This project is designed for tabletop RPG fans, allowing players to manage their characters, track progress, and compete in rankings.
 
-Features
-🏰 User Roles
-Administrator (Guildmaster)
+Roles:
+Admin (Guildmaster) – Manages the system.
+Member (Player) – Creates and plays with their characters.
 
-Manages quests (creates, edits, deletes).
-Oversees the guild and can remove members.
-User (Guild Member)
+Admin (Guildmaster) Capabilities:
+Create achievements.
+Create quests.
+Delete users.
+View the leaderboard for both characters and players.
 
-Registers and creates characters.
-Takes quests from the job board and completes them.
-Earns rewards (experience, gold, achievements).
-Levels up characters.
-⚔️ Key Features
-✅ Character system – create, edit, and delete characters.
-✅ Quests – select, complete, and receive rewards.
-✅ Resources – gold, experience, and an achievement system.
-✅ Leaderboard – ranking system for users and characters.
-✅ Authentication system – registration, login, and logout.
-✅ Role-based access – different permissions for admins and users.
+Member (Player) Capabilities:
+Create characters.
+Edit character names.
+Delete characters.
+View the leaderboard.
+Accept quests for characters.
+Complete quests when conditions are met.
 
-Technical Implementation
-Backend: Node.js, Express, MongoDB (Mongoose), bcrypt, JWT.
-Frontend: EJS, CSS, client-side JavaScript.
-Security: XSS protection, password encryption, authentication middleware.
-Deployment: Render.com.
+Character Progression:
+Players earn experience and gold.
+Upon reaching an experience threshold, they level up.
+Hidden achievements are awarded by the Guildmaster for special actions.
+
+Leaderboard System:
+Players and characters are ranked based on level, achievements, and quests completed.
+The leaderboard can be sorted by level and rating.
+
+Technical Implementation Backend: Node.js, Express, MongoDB (Mongoose), bcrypt, JWT. Frontend: EJS, CSS, client-side JavaScript. Security: XSS protection, password encryption, authentication middleware and other's. Deployment: Render.com.
